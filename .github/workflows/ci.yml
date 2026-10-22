@@ -1,0 +1,45 @@
+name: CI & Code Scanning
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install ruff pytest
+        pip install -e .
+
+    - name: Lint with Ruff
+      run: |
+        ruff check .
+
+    - name: Test with Pytest
+      run: |
+        pytest -v
+
+    - name: Run Secret Sentinel Self-Scan (SARIF Export)
+      run: |
+        secret-sentinel scan . --format sarif --no-fail > results.sarif
+
+    - name: Upload SARIF report to GitHub Security
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: results.sarif
+      continue-on-error: true
