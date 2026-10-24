@@ -25,7 +25,10 @@ jobs:
           script_stop: true
           script: |
             set -e
-            TARGET_DIR="${{ secrets.HOSTINGER_TARGET_DIR }}"
+            TARGET_DIR=$(echo "${{ secrets.HOSTINGER_TARGET_DIR }}" | tr -d '\r\n')
+            if [ -z "$TARGET_DIR" ]; then
+              TARGET_DIR="/home/u922787661/domains/danielkill.online/public_html"
+            fi
             echo "Deploying to target: $TARGET_DIR"
             cd "$TARGET_DIR"
 
