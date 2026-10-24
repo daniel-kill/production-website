@@ -25,6 +25,7 @@ jobs:
           script_stop: true
           script: |
             set -e
+            set -x
             echo "Navigating to web root..."
             cd /home/u922787661/domains/danielkill.online/public_html
 
