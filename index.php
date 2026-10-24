@@ -120,11 +120,11 @@ $csrfToken = getCsrfToken();
           <article class="card card-featured">
             <div class="card-badge">Playable in Browser</div>
             <div class="card-icon" aria-hidden="true">🎮</div>
-            <h3>PowerShell Games Arcade</h3>
-            <p>Interactive PowerShell 7 terminal games and classic dungeon crawlers—now playable directly in your browser, featuring <strong>The Wizard's Castle (1980)</strong> and <strong>Draculaland (1777)</strong>.</p>
+            <h3>Retro Games &amp; Arcade Hub</h3>
+            <p>Interactive web-playable retro games and terminal simulations—featuring <strong>The Wizard's Castle (1980)</strong>, <strong>Draculaland (1777)</strong>, and <strong>BloodByte</strong> (Gothic Arcade Maze).</p>
             <div class="card-links">
               <a class="btn btn-primary btn-sm" href="games.php">🎮 Play Online</a>
-              <a class="card-link" href="https://github.com/daniel-kill/games" target="_blank" rel="noopener noreferrer">Explore Repo ↗</a>
+              <a class="card-link" href="https://github.com/daniel-kill/bloodbyte" target="_blank" rel="noopener noreferrer">BloodByte Repo ↗</a>
             </div>
           </article>
 

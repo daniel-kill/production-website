@@ -56,8 +56,11 @@ require_once __DIR__ . '/config.php';
           <a href="draculaland.php" class="arcade-tab tab-dracula">
             <span aria-hidden="true">🧛</span> Draculaland (1777 Adventure)
           </a>
+          <a href="bloodbyte.php" class="arcade-tab tab-bloodbyte">
+            <span aria-hidden="true">🩸</span> BloodByte (Arcade Maze)
+          </a>
           <a href="https://github.com/daniel-kill/games" target="_blank" rel="noopener noreferrer" class="arcade-tab">
-            <span aria-hidden="true">📦</span> All 6 Games on GitHub ↗
+            <span aria-hidden="true">📦</span> All Games on GitHub ↗
           </a>
         </nav>
       </section>
@@ -230,6 +233,23 @@ require_once __DIR__ . '/config.php';
         </div>
 
         <div class="games-catalog-grid">
+          <!-- Game: BloodByte -->
+          <article class="game-catalog-card" style="border-color: rgba(244, 63, 94, 0.45);">
+            <div>
+              <div class="card-header-badge">
+                <span class="game-icon-large" aria-hidden="true">🩸</span>
+                <span class="badge-status badge-playable">Playable Online</span>
+              </div>
+              <h3>BloodByte</h3>
+              <p>Gothic vampire arcade maze runner. Stride through the subterranean corridors, collect ancient coins, seize blood packets, and charm pursuing maidens.</p>
+              <div class="game-card-meta">JavaScript · HTML5 Canvas · Web Audio API</div>
+            </div>
+            <div class="game-card-actions">
+              <a class="btn btn-primary btn-sm" href="bloodbyte.php" style="background: #f43f5e; border-color: #f43f5e; color: #fff;">🎮 Play Online</a>
+              <a class="btn btn-sm" href="https://github.com/daniel-kill/bloodbyte" target="_blank" rel="noopener noreferrer">View Repo ↗</a>
+            </div>
+          </article>
+
           <!-- Game 1: The Wizard's Castle -->
           <article class="game-catalog-card">
             <div>
@@ -341,6 +361,7 @@ require_once __DIR__ . '/config.php';
         <a href="index.php#projects">Projects</a>
         <a href="games.php">The Wizard's Castle</a>
         <a href="draculaland.php">Draculaland</a>
+        <a href="bloodbyte.php">BloodByte</a>
         <a href="https://github.com/daniel-kill/games" target="_blank" rel="noopener noreferrer">Games Repo ↗</a>
         <a href="index.php#contact">Contact</a>
       </div>
