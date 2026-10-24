@@ -29,6 +29,7 @@ $csrfToken = getCsrfToken();
       <a class="wordmark" href="#" aria-label="Daniel Kill home">DK<span>.</span></a>
       <nav class="nav-links">
         <a href="#projects">Projects</a>
+        <a href="games.php" class="nav-highlight">Games <span class="badge-tag">Playable</span></a>
         <a href="#discord">Discord</a>
         <a href="#contact">Contact</a>
       </nav>
@@ -47,6 +48,7 @@ $csrfToken = getCsrfToken();
           <p class="lead">Software developer, automation enthusiast, and open-source creator. I build developer CLIs, Discord community bots, security tools, and interactive terminal simulations.</p>
           <div class="actions">
             <a class="btn btn-primary" href="#contact">Get in touch <span aria-hidden="true">↓</span></a>
+            <a class="btn" href="games.php">🎮 Play Games Arcade <span aria-hidden="true">→</span></a>
             <a class="btn" href="https://github.com/daniel-kill?tab=repositories" target="_blank" rel="noopener noreferrer">GitHub Repositories <span aria-hidden="true">↗</span></a>
             <a class="btn" href="assets/Resume_Daniel-Kill.pdf" target="_blank" rel="noopener noreferrer">Resume <span aria-hidden="true">↗</span></a>
           </div>
@@ -115,11 +117,15 @@ $csrfToken = getCsrfToken();
             <p class="card-link"><a href="https://github.com/daniel-kill/curio-byte" target="_blank" rel="noopener noreferrer">Explore Curio.Byte ↗</a></p>
           </article>
 
-          <article class="card">
+          <article class="card card-featured">
+            <div class="card-badge">Playable in Browser</div>
             <div class="card-icon" aria-hidden="true">🎮</div>
-            <h3>PowerShell Games</h3>
-            <p>Interactive PowerShell 7 terminal games and Scott Adams-style text adventures—including the 1777 Dracula adventure and Wizard's Castle.</p>
-            <p class="card-link"><a href="https://github.com/daniel-kill/games" target="_blank" rel="noopener noreferrer">Explore Games ↗</a></p>
+            <h3>PowerShell Games Arcade</h3>
+            <p>Interactive PowerShell 7 terminal games and classic dungeon crawlers—now playable directly in your browser, starting with <strong>The Wizard's Castle (1980)</strong>.</p>
+            <div class="card-links">
+              <a class="btn btn-primary btn-sm" href="games.php">🎮 Play Online</a>
+              <a class="card-link" href="https://github.com/daniel-kill/games" target="_blank" rel="noopener noreferrer">Explore Repo ↗</a>
+            </div>
           </article>
 
           <article class="card">

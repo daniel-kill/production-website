@@ -1,0 +1,418 @@
+/* ----------------------------------------------------------------------
+ * Terminal Games Arcade Stylesheet — danielkill.online
+ * Maintainer: Daniel Kill
+ * ---------------------------------------------------------------------- */
+
+.arcade-hero {
+  padding: 40px 0 20px;
+}
+
+.arcade-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  line-height: 1.15;
+  margin: 0 0 16px;
+  color: var(--text);
+}
+
+.arcade-hero .lead {
+  font-size: 1.15rem;
+  color: var(--muted);
+  max-width: 760px;
+  margin: 0 0 24px;
+}
+
+/* CRT Terminal Shell */
+.crt-terminal-box {
+  position: relative;
+  background: #080d1a;
+  border: 1px solid rgba(140, 230, 208, 0.35);
+  border-radius: 12px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 30px rgba(140, 230, 208, 0.1);
+  overflow: hidden;
+  margin: 24px 0 40px;
+}
+
+.terminal-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #0f1629;
+  border-bottom: 1px solid rgba(156, 174, 255, 0.18);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.window-dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dot-red { width: 11px; height: 11px; border-radius: 50%; background: #ef4444; }
+.dot-yellow { width: 11px; height: 11px; border-radius: 50%; background: #f59e0b; }
+.dot-green { width: 11px; height: 11px; border-radius: 50%; background: #10b981; }
+
+.titlebar-title {
+  font-weight: 600;
+  color: #e2e8f0;
+}
+
+.titlebar-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-term-action {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-term-action:hover {
+  background: rgba(140, 230, 208, 0.2);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.btn-term-action.active {
+  background: rgba(140, 230, 208, 0.25);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Terminal HUD Status Bar */
+.terminal-hud {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  padding: 12px 16px;
+  background: #0b1122;
+  border-bottom: 1px solid rgba(140, 230, 208, 0.18);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+
+.hud-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.hud-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+}
+
+.hud-value {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Terminal Screen */
+.terminal-screen {
+  height: 420px;
+  overflow-y: auto;
+  padding: 16px 20px;
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  background: #060913;
+  color: #94e2d5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Scanlines overlay effect */
+.scanlines-enabled .terminal-screen {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), #060913;
+  background-size: 100% 4px;
+}
+
+/* Terminal Text Classes */
+.term-line {
+  margin-bottom: 4px;
+}
+
+.line-normal { color: #cdd6f4; }
+.line-highlight { color: #f9e2af; font-weight: 600; text-shadow: 0 0 6px rgba(249, 226, 175, 0.4); }
+.line-success { color: #a6e3a1; font-weight: 600; }
+.line-warning { color: #fab387; }
+.line-danger { color: #f38ba8; font-weight: 600; text-shadow: 0 0 6px rgba(243, 139, 168, 0.4); }
+.line-muted { color: #6c7086; font-size: 0.82rem; }
+.line-prompt { color: #89b4fa; font-weight: 600; }
+.line-user { color: #8ce6d0; font-weight: 700; }
+.term-map-row { color: #a6e3a1; letter-spacing: 1px; font-weight: 600; }
+
+/* Terminal Prompt & Input */
+.terminal-prompt-box {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  background: #090e1c;
+  border-top: 1px solid rgba(156, 174, 255, 0.15);
+}
+
+.terminal-prompt-box form {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+
+.prompt-prefix {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-weight: 700;
+  margin-right: 10px;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+}
+
+/* Touch Controls & Virtual Keypad */
+.arcade-controls-panel {
+  padding: 16px 20px;
+  background: #0d1428;
+  border-top: 1px solid rgba(140, 230, 208, 0.18);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dpad-container {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(3, 40px);
+  gap: 5px;
+}
+
+.dpad-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.dpad-btn:active, .dpad-btn:hover {
+  background: var(--accent);
+  color: #0b1020;
+}
+
+.dpad-n { grid-column: 2; grid-row: 1; }
+.dpad-w { grid-column: 1; grid-row: 2; }
+.dpad-center { grid-column: 2; grid-row: 2; opacity: 0.3; pointer-events: none; }
+.dpad-e { grid-column: 3; grid-row: 2; }
+.dpad-s { grid-column: 2; grid-row: 3; }
+
+.action-buttons-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  flex: 1;
+  max-width: 650px;
+}
+
+.quick-action-btn {
+  background: rgba(140, 230, 208, 0.1);
+  border: 1px solid rgba(140, 230, 208, 0.3);
+  color: var(--accent-hover);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.quick-action-btn:hover, .quick-action-btn:active {
+  background: var(--accent);
+  color: #0b1020;
+}
+
+.quick-action-combat {
+  background: rgba(248, 113, 113, 0.15);
+  border-color: rgba(248, 113, 113, 0.4);
+  color: #fca5a5;
+}
+
+.quick-action-combat:hover {
+  background: #f87171;
+  color: #fff;
+}
+
+/* Games Catalog Section */
+.games-catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.game-catalog-card {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.game-catalog-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--line-hover);
+}
+
+.card-header-badge {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.game-icon-large {
+  font-size: 2rem;
+}
+
+.badge-status {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-playable {
+  background: rgba(110, 231, 183, 0.18);
+  color: #6ee7b7;
+  border: 1px solid rgba(110, 231, 183, 0.4);
+}
+
+.badge-in-port {
+  background: rgba(251, 191, 36, 0.16);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.game-catalog-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  margin: 0 0 10px;
+  color: var(--text);
+}
+
+.game-catalog-card p {
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin-bottom: 18px;
+}
+
+.game-card-meta {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  color: #818cf8;
+  margin-bottom: 16px;
+}
+
+.game-card-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Tabs & Story Guide Accordion */
+.guide-accordion {
+  margin-top: 40px;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.guide-summary {
+  padding: 16px 20px;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.guide-content {
+  padding: 0 20px 20px;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  border-top: 1px solid var(--line);
+}
+
+.guide-content h4 {
+  font-family: var(--font-display);
+  color: var(--text);
+  margin: 18px 0 8px;
+}
+
+.guide-content ul {
+  padding-left: 20px;
+  margin: 6px 0;
+}
+
+@media (max-width: 768px) {
+  .arcade-controls-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dpad-container {
+    margin: 0 auto;
+  }
+  .action-buttons-group {
+    justify-content: center;
+  }
+}
