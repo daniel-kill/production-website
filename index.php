@@ -121,7 +121,7 @@ $csrfToken = getCsrfToken();
             <div class="card-badge">Playable in Browser</div>
             <div class="card-icon" aria-hidden="true">🎮</div>
             <h3>PowerShell Games Arcade</h3>
-            <p>Interactive PowerShell 7 terminal games and classic dungeon crawlers—now playable directly in your browser, starting with <strong>The Wizard's Castle (1980)</strong>.</p>
+            <p>Interactive PowerShell 7 terminal games and classic dungeon crawlers—now playable directly in your browser, featuring <strong>The Wizard's Castle (1980)</strong> and <strong>Draculaland (1777)</strong>.</p>
             <div class="card-links">
               <a class="btn btn-primary btn-sm" href="games.php">🎮 Play Online</a>
               <a class="card-link" href="https://github.com/daniel-kill/games" target="_blank" rel="noopener noreferrer">Explore Repo ↗</a>

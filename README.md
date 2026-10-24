@@ -20,7 +20,7 @@ High-performance, secure portfolio and service platform designed for reliability
 
 ## ✨ Features
 
-- **Interactive PowerShell Games Arcade (`games.php`):** Playable in-browser retro CRT terminal running Daniel Kill's complete port of *The Wizard's Castle (1980 RPG)* with toroidal map navigation, combat engine, vendor trade, spell system, sound synthesizer, and touch D-pad.
+- **Interactive PowerShell Games Arcade (`games.php` & `draculaland.php`):** Playable in-browser retro CRT terminals running Daniel Kill's complete ports of *The Wizard's Castle (1980 RPG)* and *Draculaland: Castle Dracula (1777 Scott Adams IF)* with full audio synthesis, virtual D-pad controls, Scott Adams 2-word parser, automap, and local state saving.
 - **Portfolio & Open-Source Showcase:** Direct interactive cards linking all public repositories (`devpulse`, `secret-sentinel`, `curio-byte`, `games`, `portfolio-projects`, and `production-website`).
 - **Discord Community Integration:** Live server status panel and Curio.Byte bot invite widget.
 - **Interactive Contact Endpoint:** AJAX-powered contact form with CSRF token protection, honeypot anti-spam verification, and asynchronous JSON response.

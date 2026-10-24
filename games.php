@@ -47,6 +47,19 @@ require_once __DIR__ . '/config.php';
         <p class="eyebrow">Interactive Terminal Arcade</p>
         <h1>PowerShell &amp; Retro Games</h1>
         <p class="lead">Original turn-based simulations and classic dungeon crawlers built by Daniel Kill for PowerShell 7, ported to run right in your browser with zero plugins or latency.</p>
+
+        <!-- Arcade Navigation Switcher Tabs -->
+        <nav class="arcade-nav-tabs" aria-label="Arcade Game Selector">
+          <a href="games.php" class="arcade-tab active" aria-current="page">
+            <span aria-hidden="true">🧙‍♂️</span> The Wizard's Castle (1980 RPG)
+          </a>
+          <a href="draculaland.php" class="arcade-tab tab-dracula">
+            <span aria-hidden="true">🧛</span> Draculaland (1777 Adventure)
+          </a>
+          <a href="https://github.com/daniel-kill/games" target="_blank" rel="noopener noreferrer" class="arcade-tab">
+            <span aria-hidden="true">📦</span> All 6 Games on GitHub ↗
+          </a>
+        </nav>
       </section>
 
       <!-- Featured Interactive Game: The Wizard's Castle -->
@@ -299,17 +312,18 @@ require_once __DIR__ . '/config.php';
           </article>
 
           <!-- Game 6: Draculaland 1777 -->
-          <article class="game-catalog-card">
+          <article class="game-catalog-card" style="border-color: rgba(239, 68, 68, 0.4);">
             <div>
               <div class="card-header-badge">
                 <span class="game-icon-large" aria-hidden="true">🧛</span>
-                <span class="badge-status badge-in-port">Port in Progress</span>
+                <span class="badge-status badge-playable">Playable Online</span>
               </div>
               <h3>Draculaland: Castle Dracula</h3>
               <p>Scott Adams-style text adventure set in the Carpathians, 1777. Solve inventory puzzles, manage lantern oil, and stake Dracula before the 300-move sunset clock expires.</p>
-              <div class="game-card-meta">PowerShell 7 · Two-Word Parser · Interactive Fiction</div>
+              <div class="game-card-meta">PowerShell 7 · Web Terminal · Interactive Fiction</div>
             </div>
             <div class="game-card-actions">
+              <a class="btn btn-primary btn-sm" href="draculaland.php" style="background: #ef4444; border-color: #ef4444; color: #fff;">🎮 Play Online</a>
               <a class="btn btn-sm" href="https://github.com/daniel-kill/games/blob/main/draculaland.ps1" target="_blank" rel="noopener noreferrer">View .ps1 Source ↗</a>
             </div>
           </article>
@@ -325,6 +339,8 @@ require_once __DIR__ . '/config.php';
       <div class="footer-links">
         <a href="index.php">Home</a>
         <a href="index.php#projects">Projects</a>
+        <a href="games.php">The Wizard's Castle</a>
+        <a href="draculaland.php">Draculaland</a>
         <a href="https://github.com/daniel-kill/games" target="_blank" rel="noopener noreferrer">Games Repo ↗</a>
         <a href="index.php#contact">Contact</a>
       </div>
