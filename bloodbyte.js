@@ -1,6 +1,5 @@
 /**
  * BloodByte — Gothic Vampire Arcade Maze Runner
- * Embedded Web Terminal Engine for danielkill.online
  * Maintainer: Daniel Kill <daniel@danielkill.online>
  * License: MIT
  */
@@ -21,7 +20,7 @@
   // 2: Coin (10 pts)
   // 3: Blood Packet (50 pts, triggers Blood Frenzy)
   // 4: Crypt Gate
-  // 5: Crypt Interior (Ghost House)
+  // 5: Crypt Interior (Central Vault)
   // 6: Warp Tunnel Corridor
   const ORIGINAL_MAP = [
     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -61,12 +60,63 @@
   // Directions & Movement Vectors
   // --------------------------------------------------------------------------
   const DIRS = {
-    NONE:  { x: 0,  y: 0,  name: 'NONE' },
+    NONE:  { x: 0,  y: 0,  name: 'NONE',  opp: 'NONE' },
     UP:    { x: 0,  y: -1, name: 'UP',    opp: 'DOWN' },
     DOWN:  { x: 0,  y: 1,  name: 'DOWN',  opp: 'UP' },
     LEFT:  { x: -1, y: 0,  name: 'LEFT',  opp: 'RIGHT' },
     RIGHT: { x: 1,  y: 0,  name: 'RIGHT', opp: 'LEFT' }
   };
+
+  // Authentic 1980 arcade priority tie-breaker order: UP > LEFT > DOWN > RIGHT
+  const CANDIDATE_DIRS = [DIRS.UP, DIRS.LEFT, DIRS.DOWN, DIRS.RIGHT];
+
+  function getOppositeDir(dir) {
+    if (dir === DIRS.UP) return DIRS.DOWN;
+    if (dir === DIRS.DOWN) return DIRS.UP;
+    if (dir === DIRS.LEFT) return DIRS.RIGHT;
+    if (dir === DIRS.RIGHT) return DIRS.LEFT;
+    return DIRS.NONE;
+  }
+
+  // --------------------------------------------------------------------------
+  // Wave Schedules (Scatter / Chase Alternation State Machine)
+  // --------------------------------------------------------------------------
+  const WAVE_SCHEDULES = {
+    1: [
+      { mode: 'SCATTER', duration: 7 },
+      { mode: 'CHASE',   duration: 20 },
+      { mode: 'SCATTER', duration: 7 },
+      { mode: 'CHASE',   duration: 20 },
+      { mode: 'SCATTER', duration: 5 },
+      { mode: 'CHASE',   duration: 20 },
+      { mode: 'SCATTER', duration: 5 },
+      { mode: 'CHASE',   duration: Infinity }
+    ],
+    2: [
+      { mode: 'SCATTER', duration: 7 },
+      { mode: 'CHASE',   duration: 20 },
+      { mode: 'SCATTER', duration: 7 },
+      { mode: 'CHASE',   duration: 20 },
+      { mode: 'SCATTER', duration: 5 },
+      { mode: 'CHASE',   duration: 1033 },
+      { mode: 'SCATTER', duration: 0.1 },
+      { mode: 'CHASE',   duration: Infinity }
+    ],
+    5: [
+      { mode: 'SCATTER', duration: 5 },
+      { mode: 'CHASE',   duration: 20 },
+      { mode: 'SCATTER', duration: 5 },
+      { mode: 'CHASE',   duration: 20 },
+      { mode: 'SCATTER', duration: 5 },
+      { mode: 'CHASE',   duration: 1037 },
+      { mode: 'SCATTER', duration: 0.1 },
+      { mode: 'CHASE',   duration: Infinity }
+    ]
+  };
+
+  let waveIndex = 0;
+  let waveTimer = 7.0;
+  let globalMode = 'SCATTER';
 
   // --------------------------------------------------------------------------
   // Gothic Relics (Bonus Items in Place of Fruit)
@@ -115,9 +165,7 @@
       gain.connect(audioCtx.destination);
       osc.start();
       osc.stop(audioCtx.currentTime + duration);
-    } catch (e) {
-      // Audio policy safe
-    }
+    } catch (e) {}
   }
 
   let coinAlternator = false;
@@ -130,7 +178,7 @@
     try {
       if (name === 'coin') {
         coinAlternator = !coinAlternator;
-        playTone(coinAlternator ? 880 : 1100, 0.04, 'square', 0.04);
+        playTone(coinAlternator ? 880 : 1100, 0.035, 'square', 0.04);
       } else if (name === 'blood') {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
@@ -192,7 +240,6 @@
   let isPaused = false;
 
   let frenzyTimer = 0;
-  const FRENZY_DURATION = 9.0;
   let womenCharmedChain = 0;
 
   // Active Relic State
@@ -203,19 +250,22 @@
   let relicSpawned1 = false;
   let relicSpawned2 = false;
 
+  // Floating score popups
   let scorePopups = [];
+
+  // Death / Clear animations
   let deathAnimationTimer = 0;
   let levelClearTimer = 0;
 
   // --------------------------------------------------------------------------
-  // Player & Pursuers
+  // The Vampire (Player)
   // --------------------------------------------------------------------------
   const vampire = {
-    x: 0,
-    y: 0,
+    x: 13.5 * TILE_SIZE,
+    y: 23 * TILE_SIZE + TILE_SIZE / 2,
     dir: DIRS.NONE,
     nextDir: DIRS.NONE,
-    speed: 2.4,
+    speed: 2.15,
     animFrame: 0,
     animTimer: 0,
 
@@ -229,46 +279,65 @@
     }
   };
 
+  // --------------------------------------------------------------------------
+  // The Four Pursuers (The Maidens)
+  // --------------------------------------------------------------------------
+  // 1. Carmilla (Red)   — Targets player directly. Cruise Elroy speed scaling.
+  // 2. Mina (Pink)      — Ambush: 4 tiles ahead (+4 UP / +4 LEFT authentic quirk).
+  // 3. Lucy (Cyan)      — Flanker: Vector reflection from Carmilla through 2 tiles ahead of player.
+  // 4. Lenore (Amber)   — Stalker: Chases directly if >= 8 tiles; retreats to corner if < 8 tiles.
   const PURSUERS_CONFIG = [
     {
       id: 'carmilla',
       name: 'Carmilla',
       color: '#ef4444',
-      homeX: 25 * TILE_SIZE,
-      homeY: 0,
+      scatterCol: 25,
+      scatterRow: -3,
       startX: 13.5 * TILE_SIZE,
-      startY: 11 * TILE_SIZE + TILE_SIZE / 2,
-      initialInHouse: false
+      startY: 11 * TILE_SIZE + TILE_SIZE / 2, // Outside crypt gate in hallway
+      startDir: DIRS.LEFT,
+      houseState: 'OUTSIDE',
+      dotLimit: 0,
+      houseTimer: 0
     },
     {
       id: 'mina',
       name: 'Mina',
       color: '#f472b6',
-      homeX: 2 * TILE_SIZE,
-      homeY: 0,
+      scatterCol: 2,
+      scatterRow: -3,
       startX: 13.5 * TILE_SIZE,
-      startY: 14 * TILE_SIZE + TILE_SIZE / 2,
-      initialInHouse: true
+      startY: 14 * TILE_SIZE + TILE_SIZE / 2, // Inside crypt center
+      startDir: DIRS.UP,
+      houseState: 'IN_HOUSE',
+      dotLimit: 0,
+      houseTimer: 0.8
     },
     {
       id: 'lucy',
       name: 'Lucy',
       color: '#22d3ee',
-      homeX: 27 * TILE_SIZE,
-      homeY: 31 * TILE_SIZE,
-      startX: 12 * TILE_SIZE,
-      startY: 14 * TILE_SIZE + TILE_SIZE / 2,
-      initialInHouse: true
+      scatterCol: 27,
+      scatterRow: 31,
+      startX: 11.5 * TILE_SIZE,
+      startY: 14 * TILE_SIZE + TILE_SIZE / 2, // Inside crypt left
+      startDir: DIRS.UP,
+      houseState: 'IN_HOUSE',
+      dotLimit: 30,
+      houseTimer: 4.0
     },
     {
       id: 'lenore',
       name: 'Lenore',
       color: '#fbbf24',
-      homeX: 0,
-      homeY: 31 * TILE_SIZE,
-      startX: 15 * TILE_SIZE,
-      startY: 14 * TILE_SIZE + TILE_SIZE / 2,
-      initialInHouse: true
+      scatterCol: 0,
+      scatterRow: 31,
+      startX: 15.5 * TILE_SIZE,
+      startY: 14 * TILE_SIZE + TILE_SIZE / 2, // Inside crypt right
+      startDir: DIRS.UP,
+      houseState: 'IN_HOUSE',
+      dotLimit: 60,
+      houseTimer: 7.5
     }
   ];
 
@@ -279,29 +348,42 @@
       id: config.id,
       name: config.name,
       color: config.color,
-      x: config.startX,
-      y: config.startY,
+      scatterCol: config.scatterCol,
+      scatterRow: config.scatterRow,
       startX: config.startX,
       startY: config.startY,
-      homeX: config.homeX,
-      homeY: config.homeY,
-      dir: DIRS.UP,
-      speed: 2.1,
-      state: config.initialInHouse ? 'IN_HOUSE' : 'CHASE',
-      houseTimer: config.id === 'carmilla' ? 0 : config.id === 'mina' ? 2.5 : config.id === 'lucy' ? 5.0 : 8.0,
+      startDir: config.startDir,
+      x: config.startX,
+      y: config.startY,
+      dir: config.startDir,
+      state: globalMode, // 'CHASE', 'SCATTER', 'FRIGHTENED', 'EATEN'
+      houseState: config.houseState, // 'OUTSIDE', 'IN_HOUSE', 'LEAVING_HOUSE'
+      houseTimer: config.houseTimer,
+      dotLimit: config.dotLimit,
+      baseSpeed: 1.95,
+      reverseDesired: false,
+      lastTileCol: -1,
+      lastTileRow: -1,
       animTimer: 0,
 
       reset() {
         this.x = this.startX;
         this.y = this.startY;
-        this.dir = DIRS.UP;
-        this.state = config.initialInHouse ? 'IN_HOUSE' : 'CHASE';
-        this.houseTimer = config.id === 'carmilla' ? 0 : config.id === 'mina' ? 2.5 : config.id === 'lucy' ? 5.0 : 8.0;
+        this.dir = this.startDir;
+        this.state = globalMode;
+        this.houseState = config.houseState;
+        this.houseTimer = config.houseTimer;
+        this.reverseDesired = false;
+        this.lastTileCol = -1;
+        this.lastTileRow = -1;
         this.animTimer = 0;
       }
     };
   }
 
+  // --------------------------------------------------------------------------
+  // Map Setup & Copying
+  // --------------------------------------------------------------------------
   function resetMap() {
     maze = [];
     totalCoins = 0;
@@ -322,56 +404,37 @@
     relicTimer = 0;
   }
 
-  function isWall(col, row, isPursuer = false, isEaten = false) {
-    if (row < 0 || row >= ROWS) return true;
-    if (col < 0 || col >= COLS) {
-      if (row === 14) return false;
-      return true;
-    }
-    const tile = maze[row][col];
-    if (tile === 1) return true;
-    if (tile === 4) {
-      if (isEaten) return false;
-      if (isPursuer) return false;
-      return true;
-    }
-    if (tile === 5 && !isPursuer) return true;
-    return false;
+  // --------------------------------------------------------------------------
+  // Tile Navigation & Pathing Rules
+  // --------------------------------------------------------------------------
+  function isRestrictedUpTile(col, row) {
+    // Authentic 1980 arcade maze rule: ghosts cannot turn UP at these 4 T-junctions
+    return (
+      (col === 12 && row === 11) ||
+      (col === 15 && row === 11) ||
+      (col === 12 && row === 23) ||
+      (col === 15 && row === 23)
+    );
   }
 
-  function canMoveInDir(x, y, dir, isPursuer = false, isEaten = false) {
-    const nextX = x + dir.x * 2;
-    const nextY = y + dir.y * 2;
+  function isTilePassable(col, row, isPursuer = false, isEaten = false, isLeaving = false) {
+    if (row < 0 || row >= ROWS) return false;
+    // Warp tunnel corridor in row 14
+    if (col < 0 || col >= COLS) {
+      return (row === 14);
+    }
 
-    const r = TILE_SIZE / 2 - 2;
-    const points = [
-      { x: nextX - r, y: nextY - r },
-      { x: nextX + r, y: nextY - r },
-      { x: nextX - r, y: nextY + r },
-      { x: nextX + r, y: nextY + r }
-    ];
-
-    for (let p of points) {
-      let col = Math.floor(p.x / TILE_SIZE);
-      let row = Math.floor(p.y / TILE_SIZE);
-      if (isWall(col, row, isPursuer, isEaten)) {
-        return false;
-      }
+    const tile = maze[row][col];
+    if (tile === 1) return false; // Wall
+    if (tile === 4) {
+      // Crypt gate: only passable if returning eaten eyes or leaving house
+      return (isEaten || isLeaving);
+    }
+    if (tile === 5) {
+      // Crypt interior: only accessible when returning eaten or inside house
+      return (isEaten || isLeaving);
     }
     return true;
-  }
-
-  function isAtIntersection(x, y) {
-    const modX = x % TILE_SIZE;
-    const modY = y % TILE_SIZE;
-    return Math.abs(modX - TILE_SIZE / 2) < 2.5 && Math.abs(modY - TILE_SIZE / 2) < 2.5;
-  }
-
-  function centerOnTile(entity) {
-    const col = Math.floor(entity.x / TILE_SIZE);
-    const row = Math.floor(entity.y / TILE_SIZE);
-    entity.x = col * TILE_SIZE + TILE_SIZE / 2;
-    entity.y = row * TILE_SIZE + TILE_SIZE / 2;
   }
 
   function getDistanceSq(x1, y1, x2, y2) {
@@ -380,130 +443,426 @@
     return dx * dx + dy * dy;
   }
 
-  function getPursuerTarget(p) {
+  // --------------------------------------------------------------------------
+  // Target Tile Selection (1980 Arcade Algorithms)
+  // --------------------------------------------------------------------------
+  function getTargetTile(p) {
+    // 1. Returning eyes target the crypt entrance directly above the gate
     if (p.state === 'EATEN') {
-      return { x: 13.5 * TILE_SIZE, y: 12 * TILE_SIZE };
+      return { col: 13, row: 11 };
     }
-    if (p.state === 'SCATTER') {
-      return { x: p.homeX, y: p.homeY };
-    }
+
+    // 2. Frightened / Mesmerized mode: pseudo-random turn
     if (p.state === 'FRIGHTENED') {
       return null;
     }
 
-    const vX = vampire.x;
-    const vY = vampire.y;
+    // 3. Scatter Mode: fixed home corners outside maze perimeter
+    const coinsLeft = totalCoins - coinsCollected;
+    const isCarmillaElroy2 = (p.id === 'carmilla' && coinsLeft <= 10);
+
+    if (p.state === 'SCATTER' && !isCarmillaElroy2) {
+      return { col: p.scatterCol, row: p.scatterRow };
+    }
+
+    // 4. Chase Mode: authentic targeting personalities
+    const vCol = Math.floor(vampire.x / TILE_SIZE);
+    const vRow = Math.floor(vampire.y / TILE_SIZE);
     const vDir = vampire.dir;
 
     if (p.id === 'carmilla') {
-      return { x: vX, y: vY };
-    } else if (p.id === 'mina') {
+      // The Shadow: pursues Vampire's exact tile
+      return { col: vCol, row: vRow };
+    }
+
+    if (p.id === 'mina') {
+      // The Ambush: 4 tiles ahead in player's current direction
+      // Authentic 1980 arcade overflow quirk: UP also shifts 4 tiles LEFT
+      if (vDir === DIRS.UP) {
+        return { col: vCol - 4, row: vRow - 4 };
+      }
       return {
-        x: vX + vDir.x * 4 * TILE_SIZE,
-        y: vY + vDir.y * 4 * TILE_SIZE
+        col: vCol + vDir.x * 4,
+        row: vRow + vDir.y * 4
       };
-    } else if (p.id === 'lucy') {
-      const carmilla = pursuers.find(g => g.id === 'carmilla') || p;
-      const pivotX = vX + vDir.x * 2 * TILE_SIZE;
-      const pivotY = vY + vDir.y * 2 * TILE_SIZE;
-      return {
-        x: pivotX + (pivotX - carmilla.x),
-        y: pivotY + (pivotY - carmilla.y)
-      };
-    } else if (p.id === 'lenore') {
-      const dist = Math.sqrt(getDistanceSq(p.x, p.y, vX, vY));
-      if (dist > 8 * TILE_SIZE) {
-        return { x: vX, y: vY };
+    }
+
+    if (p.id === 'lucy') {
+      // The Flanker: vector reflection through 2 tiles ahead of player from Carmilla
+      let pCol = vCol;
+      let pRow = vRow;
+      if (vDir === DIRS.UP) {
+        pCol -= 2;
+        pRow -= 2;
       } else {
-        return { x: p.homeX, y: p.homeY };
+        pCol += vDir.x * 2;
+        pRow += vDir.y * 2;
       }
-    }
-    return { x: vX, y: vY };
-  }
 
-  function updatePursuerAI(p, dt) {
-    if (p.state === 'IN_HOUSE') {
-      p.houseTimer -= dt;
-      p.y += (p.dir === DIRS.UP ? -1 : 1) * p.speed * 0.4;
-      if (p.y < 13.5 * TILE_SIZE) p.dir = DIRS.DOWN;
-      if (p.y > 15 * TILE_SIZE) p.dir = DIRS.UP;
+      const carmilla = pursuers.find(g => g.id === 'carmilla') || p;
+      const cCol = Math.floor(carmilla.x / TILE_SIZE);
+      const cRow = Math.floor(carmilla.y / TILE_SIZE);
 
-      if (p.houseTimer <= 0) {
-        if (Math.abs(p.x - 13.5 * TILE_SIZE) > 2) {
-          p.x += (p.x < 13.5 * TILE_SIZE ? 1 : -1) * p.speed;
-        } else {
-          p.x = 13.5 * TILE_SIZE;
-          p.y -= p.speed;
-          if (p.y <= 11 * TILE_SIZE + TILE_SIZE / 2) {
-            p.state = frenzyTimer > 0 ? 'FRIGHTENED' : 'CHASE';
-            p.dir = DIRS.LEFT;
-          }
-        }
-      }
-      return;
+      const vecX = pCol - cCol;
+      const vecY = pRow - cRow;
+
+      return {
+        col: pCol + vecX,
+        row: pRow + vecY
+      };
     }
 
-    if (p.state === 'EATEN') {
-      if (Math.abs(p.x - 13.5 * TILE_SIZE) < 6 && Math.abs(p.y - 14 * TILE_SIZE) < 6) {
-        p.state = 'IN_HOUSE';
-        p.houseTimer = 1.5;
-        p.dir = DIRS.UP;
-        return;
+    if (p.id === 'lenore') {
+      // The Stalker: Chases directly when >= 8 tiles; retreats to corner when < 8 tiles
+      const pCol = Math.floor(vampire.x / TILE_SIZE);
+      const pRow = Math.floor(vampire.y / TILE_SIZE);
+      const myCol = Math.floor(p.x / TILE_SIZE);
+      const myRow = Math.floor(p.y / TILE_SIZE);
+      const distSq = (myCol - pCol) * (myCol - pCol) + (myRow - pRow) * (myRow - pRow);
+
+      if (distSq >= 64) {
+        return { col: pCol, row: pRow };
+      } else {
+        return { col: p.scatterCol, row: p.scatterRow };
       }
     }
 
-    if (p.x < -TILE_SIZE / 2) p.x = COLS * TILE_SIZE;
-    if (p.x > COLS * TILE_SIZE + TILE_SIZE / 2) p.x = -TILE_SIZE / 2;
-
-    let curSpeed = p.speed;
-    if (p.state === 'EATEN') {
-      curSpeed = p.speed * 2.2;
-    } else if (p.state === 'FRIGHTENED') {
-      curSpeed = p.speed * 0.55;
-    } else {
-      const col = Math.floor(p.x / TILE_SIZE);
-      const row = Math.floor(p.y / TILE_SIZE);
-      if (row === 14 && (col <= 5 || col >= 22)) {
-        curSpeed = p.speed * 0.5;
-      }
-    }
-
-    if (isAtIntersection(p.x, p.y)) {
-      centerOnTile(p);
-
-      const possibleDirs = [DIRS.UP, DIRS.DOWN, DIRS.LEFT, DIRS.RIGHT].filter(d => {
-        if (d.name === p.dir.opp) return false;
-        return canMoveInDir(p.x, p.y, d, true, p.state === 'EATEN');
-      });
-
-      if (possibleDirs.length > 0) {
-        if (p.state === 'FRIGHTENED') {
-          p.dir = possibleDirs[Math.floor(Math.random() * possibleDirs.length)];
-        } else {
-          const target = getPursuerTarget(p);
-          let bestDir = possibleDirs[0];
-          let bestDist = Infinity;
-
-          possibleDirs.forEach(d => {
-            const testX = p.x + d.x * TILE_SIZE;
-            const testY = p.y + d.y * TILE_SIZE;
-            const dist = getDistanceSq(testX, testY, target.x, target.y);
-            if (dist < bestDist) {
-              bestDist = dist;
-              bestDir = d;
-            }
-          });
-          p.dir = bestDir;
-        }
-      }
-    }
-
-    p.x += p.dir.x * curSpeed;
-    p.y += p.dir.y * curSpeed;
+    return { col: vCol, row: vRow };
   }
 
   // --------------------------------------------------------------------------
-  // Game Loop Update
+  // Pursuer Intersection Decision
+  // --------------------------------------------------------------------------
+  function getNextPursuerDir(p, col, row) {
+    // Mode switch forced 180 reverse
+    if (p.reverseDesired) {
+      p.reverseDesired = false;
+      const opp = getOppositeDir(p.dir);
+      const nc = col + opp.x;
+      const nr = row + opp.y;
+      if (isTilePassable(nc, nr, true, p.state === 'EATEN')) {
+        return opp;
+      }
+    }
+
+    const validDirs = [];
+    for (const d of CANDIDATE_DIRS) {
+      // Rule 1: Cannot reverse 180 during normal corridor traversal
+      if (d.name === p.dir.opp) continue;
+
+      const nc = col + d.x;
+      const nr = row + d.y;
+
+      // Rule 2: Restricted "No-Up" tiles in arcade labyrinth
+      if (d === DIRS.UP && p.state !== 'EATEN' && isRestrictedUpTile(col, row)) {
+        continue;
+      }
+
+      // Rule 3: Wall & obstacle collision check
+      if (isTilePassable(nc, nr, true, p.state === 'EATEN')) {
+        validDirs.push(d);
+      }
+    }
+
+    if (validDirs.length === 0) {
+      return getOppositeDir(p.dir);
+    }
+
+    // Frightened / Mesmerized mode: pseudo-random turn
+    if (p.state === 'FRIGHTENED') {
+      const idx = Math.floor(Math.random() * validDirs.length);
+      return validDirs[idx];
+    }
+
+    // Target-directed navigation: minimize Euclidean distance
+    const target = getTargetTile(p);
+    let bestDir = validDirs[0];
+    let minDistanceSq = Infinity;
+
+    for (const d of validDirs) {
+      const nc = col + d.x;
+      const nr = row + d.y;
+      const dist = (nc - target.col) * (nc - target.col) + (nr - target.row) * (nr - target.row);
+
+      // Strictly '<' preserves CANDIDATE_DIRS tie-breaker order: UP > LEFT > DOWN > RIGHT
+      if (dist < minDistanceSq) {
+        minDistanceSq = dist;
+        bestDir = d;
+      }
+    }
+
+    return bestDir;
+  }
+
+  // --------------------------------------------------------------------------
+  // Crypt House State Updates
+  // --------------------------------------------------------------------------
+  function updateHouseBobbing(p, dt) {
+    p.animTimer += dt;
+    p.y = p.startY + Math.sin(p.animTimer * 5) * 4;
+
+    p.houseTimer -= dt;
+    if (p.houseTimer <= 0 || (p.dotLimit > 0 && coinsCollected >= p.dotLimit)) {
+      p.houseState = 'LEAVING_HOUSE';
+    }
+  }
+
+  function updateLeavingHouse(p, dt) {
+    const targetX = 13.5 * TILE_SIZE;
+    const exitY = 11 * TILE_SIZE + TILE_SIZE / 2;
+
+    const diffX = targetX - p.x;
+    if (Math.abs(diffX) > 1) {
+      p.x += Math.sign(diffX) * 1.5;
+      return;
+    }
+    p.x = targetX;
+
+    if (p.y > exitY) {
+      p.y -= 1.5;
+      p.dir = DIRS.UP;
+      if (p.y <= exitY) {
+        p.y = exitY;
+        p.houseState = 'OUTSIDE';
+        p.dir = DIRS.LEFT;
+        p.state = (frenzyTimer > 0) ? 'FRIGHTENED' : globalMode;
+        p.lastTileCol = 13;
+        p.lastTileRow = 11;
+      }
+    }
+  }
+
+  function getPursuerSpeed(p) {
+    if (p.state === 'EATEN') return 4.0;
+    if (p.state === 'FRIGHTENED') return 1.15;
+
+    const c = Math.floor(p.x / TILE_SIZE);
+    const r = Math.floor(p.y / TILE_SIZE);
+    // Warp tunnel slowdown (50%)
+    if (r === 14 && (c <= 5 || c >= 22)) {
+      return 1.0;
+    }
+
+    let spd = p.baseSpeed;
+    const coinsLeft = totalCoins - coinsCollected;
+    if (p.id === 'carmilla') {
+      if (coinsLeft <= 10) spd *= 1.15; // Cruise Elroy 2
+      else if (coinsLeft <= 20) spd *= 1.08; // Cruise Elroy 1
+    }
+    return spd;
+  }
+
+  function updatePursuerAI(p, dt) {
+    if (p.houseState === 'IN_HOUSE') {
+      updateHouseBobbing(p, dt);
+      return;
+    }
+    if (p.houseState === 'LEAVING_HOUSE') {
+      updateLeavingHouse(p, dt);
+      return;
+    }
+
+    const curSpeed = getPursuerSpeed(p);
+    let moveDist = curSpeed * 60 * dt;
+    moveDist = Math.min(moveDist, TILE_SIZE * 0.45);
+
+    // Tunnel wrap-around
+    if (p.x < -TILE_SIZE / 2) {
+      p.x = COLS * TILE_SIZE + TILE_SIZE / 2;
+    } else if (p.x > COLS * TILE_SIZE + TILE_SIZE / 2) {
+      p.x = -TILE_SIZE / 2;
+    }
+
+    // Discrete sub-pixel tile center navigation
+    while (moveDist > 0.001) {
+      const curCol = Math.floor(p.x / TILE_SIZE);
+      const curRow = Math.floor(p.y / TILE_SIZE);
+      const centerX = curCol * TILE_SIZE + TILE_SIZE / 2;
+      const centerY = curRow * TILE_SIZE + TILE_SIZE / 2;
+
+      let distToCenter = 0;
+      if (p.dir === DIRS.RIGHT) distToCenter = centerX - p.x;
+      else if (p.dir === DIRS.LEFT) distToCenter = p.x - centerX;
+      else if (p.dir === DIRS.DOWN) distToCenter = centerY - p.y;
+      else if (p.dir === DIRS.UP) distToCenter = p.y - centerY;
+
+      if (distToCenter > 0 && distToCenter <= moveDist) {
+        // Step exactly onto tile center
+        p.x = centerX;
+        p.y = centerY;
+        moveDist -= distToCenter;
+
+        // Check if returning eaten eyes reached crypt doorway
+        if (p.state === 'EATEN' && (curCol === 13 || curCol === 14) && curRow === 11) {
+          p.x = 13.5 * TILE_SIZE;
+          p.y = 14 * TILE_SIZE + TILE_SIZE / 2;
+          p.state = globalMode;
+          p.houseState = 'LEAVING_HOUSE';
+          break;
+        }
+
+        // Evaluate next turn at intersection center
+        p.dir = getNextPursuerDir(p, curCol, curRow);
+        p.lastTileCol = curCol;
+        p.lastTileRow = curRow;
+      } else {
+        const step = (distToCenter > 0) ? Math.min(moveDist, distToCenter) : moveDist;
+        p.x += p.dir.x * step;
+        p.y += p.dir.y * step;
+
+        if (p.dir === DIRS.LEFT || p.dir === DIRS.RIGHT) {
+          p.y = centerY;
+        } else if (p.dir === DIRS.UP || p.dir === DIRS.DOWN) {
+          p.x = centerX;
+        }
+        moveDist -= step;
+      }
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // Vampire Movement (Responsive Player Controls with Corner Buffering)
+  // --------------------------------------------------------------------------
+  function updateVampire(dt) {
+    if (vampire.dir === DIRS.NONE && vampire.nextDir === DIRS.NONE) return;
+
+    // Immediate 180 reversal
+    if (vampire.nextDir !== DIRS.NONE && vampire.dir !== DIRS.NONE && vampire.nextDir.name === vampire.dir.opp) {
+      vampire.dir = vampire.nextDir;
+      vampire.nextDir = DIRS.NONE;
+    }
+
+    let moveDist = vampire.speed * 60 * dt;
+    moveDist = Math.min(moveDist, TILE_SIZE * 0.45);
+
+    // Tunnel wrap-around
+    if (vampire.x < -TILE_SIZE / 2) {
+      vampire.x = COLS * TILE_SIZE + TILE_SIZE / 2;
+    } else if (vampire.x > COLS * TILE_SIZE + TILE_SIZE / 2) {
+      vampire.x = -TILE_SIZE / 2;
+    }
+
+    while (moveDist > 0.001) {
+      const curCol = Math.floor(vampire.x / TILE_SIZE);
+      const curRow = Math.floor(vampire.y / TILE_SIZE);
+      const centerX = curCol * TILE_SIZE + TILE_SIZE / 2;
+      const centerY = curRow * TILE_SIZE + TILE_SIZE / 2;
+
+      let distToCenter = 0;
+      if (vampire.dir === DIRS.RIGHT) distToCenter = centerX - vampire.x;
+      else if (vampire.dir === DIRS.LEFT) distToCenter = vampire.x - centerX;
+      else if (vampire.dir === DIRS.DOWN) distToCenter = centerY - vampire.y;
+      else if (vampire.dir === DIRS.UP) distToCenter = vampire.y - centerY;
+      else distToCenter = 0;
+
+      if (distToCenter > 0 && distToCenter <= moveDist) {
+        vampire.x = centerX;
+        vampire.y = centerY;
+        moveDist -= distToCenter;
+
+        // Try turn into queued nextDir
+        if (vampire.nextDir !== DIRS.NONE) {
+          const nc = curCol + vampire.nextDir.x;
+          const nr = curRow + vampire.nextDir.y;
+          if (isTilePassable(nc, nr, false)) {
+            vampire.dir = vampire.nextDir;
+            vampire.nextDir = DIRS.NONE;
+          }
+        }
+
+        // Verify forward path is open
+        const forwardC = curCol + vampire.dir.x;
+        const forwardR = curRow + vampire.dir.y;
+        if (!isTilePassable(forwardC, forwardR, false)) {
+          vampire.dir = DIRS.NONE;
+          break;
+        }
+      } else {
+        // Corner buffering within 5px of tile center
+        if (vampire.nextDir !== DIRS.NONE && vampire.dir !== DIRS.NONE) {
+          const offX = Math.abs(vampire.x - centerX);
+          const offY = Math.abs(vampire.y - centerY);
+          if (offX <= 5 && offY <= 5) {
+            const nc = curCol + vampire.nextDir.x;
+            const nr = curRow + vampire.nextDir.y;
+            if (isTilePassable(nc, nr, false)) {
+              vampire.x = centerX;
+              vampire.y = centerY;
+              vampire.dir = vampire.nextDir;
+              vampire.nextDir = DIRS.NONE;
+              continue;
+            }
+          }
+        }
+
+        if (vampire.dir === DIRS.NONE) {
+          if (vampire.nextDir !== DIRS.NONE) {
+            const nc = curCol + vampire.nextDir.x;
+            const nr = curRow + vampire.nextDir.y;
+            if (isTilePassable(nc, nr, false)) {
+              vampire.x = centerX;
+              vampire.y = centerY;
+              vampire.dir = vampire.nextDir;
+              vampire.nextDir = DIRS.NONE;
+              continue;
+            }
+          }
+          break;
+        }
+
+        const step = (distToCenter > 0) ? Math.min(moveDist, distToCenter) : moveDist;
+        vampire.x += vampire.dir.x * step;
+        vampire.y += vampire.dir.y * step;
+
+        if (vampire.dir === DIRS.LEFT || vampire.dir === DIRS.RIGHT) {
+          vampire.y = centerY;
+        } else if (vampire.dir === DIRS.UP || vampire.dir === DIRS.DOWN) {
+          vampire.x = centerX;
+        }
+        moveDist -= step;
+
+        vampire.animTimer += dt;
+        if (vampire.animTimer > 0.08) {
+          vampire.animFrame = (vampire.animFrame + 1) % 4;
+          vampire.animTimer = 0;
+        }
+      }
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // Wave Schedule Updates
+  // --------------------------------------------------------------------------
+  function updateWaveTimers(dt) {
+    if (frenzyTimer > 0) return; // Waves pause during Frenzy
+
+    const schedule = (level === 1) ? WAVE_SCHEDULES[1] : (level < 5) ? WAVE_SCHEDULES[2] : WAVE_SCHEDULES[5];
+    if (waveIndex >= schedule.length) return;
+
+    waveTimer -= dt;
+    if (waveTimer <= 0) {
+      waveIndex++;
+      if (waveIndex < schedule.length) {
+        const nextPhase = schedule[waveIndex];
+        const prevMode = globalMode;
+        globalMode = nextPhase.mode;
+        waveTimer = nextPhase.duration;
+
+        // Wave change reverse event: all active maidens reverse direction
+        if (globalMode !== prevMode) {
+          pursuers.forEach(p => {
+            if (p.houseState === 'OUTSIDE' && (p.state === 'CHASE' || p.state === 'SCATTER')) {
+              p.state = globalMode;
+              p.reverseDesired = true;
+            }
+          });
+        }
+      }
+    }
+  }
+
+  // --------------------------------------------------------------------------
+  // Update Loop & Collision Checks
   // --------------------------------------------------------------------------
   function update(dt) {
     if (isGameOver || isGameWon || isPaused) return;
@@ -519,6 +878,9 @@
         } else {
           vampire.reset();
           pursuers.forEach(p => p.reset());
+          waveIndex = 0;
+          waveTimer = 7.0;
+          globalMode = 'SCATTER';
         }
       }
       return;
@@ -528,12 +890,15 @@
       levelClearTimer -= dt;
       if (levelClearTimer <= 0) {
         level++;
-        vampire.speed = Math.min(3.2, 2.4 + level * 0.1);
+        vampire.speed = Math.min(2.7, 2.15 + level * 0.05);
         pursuers.forEach(p => {
-          p.speed = Math.min(3.0, 2.1 + level * 0.1);
+          p.baseSpeed = Math.min(2.5, 1.95 + level * 0.05);
         });
         resetMap();
         vampire.reset();
+        waveIndex = 0;
+        waveTimer = (level < 5) ? 7.0 : 5.0;
+        globalMode = 'SCATTER';
         pursuers.forEach(p => p.reset());
         updateHUD();
         playSound('start');
@@ -541,17 +906,22 @@
       return;
     }
 
+    // 1. Advance Wave Schedule
+    updateWaveTimers(dt);
+
+    // 2. Update Blood Frenzy Timer
     if (frenzyTimer > 0) {
       frenzyTimer -= dt;
       if (frenzyTimer <= 0) {
         frenzyTimer = 0;
         pursuers.forEach(p => {
-          if (p.state === 'FRIGHTENED') p.state = 'CHASE';
+          if (p.state === 'FRIGHTENED') p.state = globalMode;
         });
         updateFrenzyUI(false);
       }
     }
 
+    // 3. Update Relic Spawn & Timer
     if (!relicSpawned1 && coinsCollected >= RELIC_SPAWN_1) {
       spawnRelic();
       relicSpawned1 = true;
@@ -567,41 +937,16 @@
       }
     }
 
-    if (vampire.nextDir !== DIRS.NONE) {
-      if (isAtIntersection(vampire.x, vampire.y)) {
-        if (canMoveInDir(vampire.x, vampire.y, vampire.nextDir)) {
-          centerOnTile(vampire);
-          vampire.dir = vampire.nextDir;
-          vampire.nextDir = DIRS.NONE;
-        }
-      } else if (vampire.nextDir.name === vampire.dir.opp) {
-        vampire.dir = vampire.nextDir;
-        vampire.nextDir = DIRS.NONE;
-      }
-    }
+    // 4. Update Vampire Position
+    updateVampire(dt);
 
-    if (vampire.dir !== DIRS.NONE) {
-      if (canMoveInDir(vampire.x, vampire.y, vampire.dir)) {
-        vampire.x += vampire.dir.x * vampire.speed;
-        vampire.y += vampire.dir.y * vampire.speed;
-        vampire.animTimer += dt;
-        if (vampire.animTimer > 0.08) {
-          vampire.animFrame = (vampire.animFrame + 1) % 4;
-          vampire.animTimer = 0;
-        }
-      } else {
-        centerOnTile(vampire);
-      }
-    }
-
-    if (vampire.x < -TILE_SIZE / 2) vampire.x = COLS * TILE_SIZE;
-    if (vampire.x > COLS * TILE_SIZE + TILE_SIZE / 2) vampire.x = -TILE_SIZE / 2;
-
+    // 5. Collect Coins & Blood Packets
     const col = Math.floor(vampire.x / TILE_SIZE);
     const row = Math.floor(vampire.y / TILE_SIZE);
     if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
       const tile = maze[row][col];
       if (tile === 2) {
+        // Ancient Coin
         maze[row][col] = 0;
         coinsCollected++;
         score += 10;
@@ -609,16 +954,17 @@
         checkHighScore();
         updateHUD();
       } else if (tile === 3) {
+        // Blood Packet
         maze[row][col] = 0;
         coinsCollected++;
         score += 50;
         playSound('blood');
-        frenzyTimer = FRENZY_DURATION;
+        frenzyTimer = Math.max(3.0, 9.0 - (level - 1) * 1.0);
         womenCharmedChain = 0;
         pursuers.forEach(p => {
-          if (p.state !== 'EATEN' && p.state !== 'IN_HOUSE') {
+          if (p.houseState === 'OUTSIDE' && p.state !== 'EATEN') {
             p.state = 'FRIGHTENED';
-            p.dir = { x: -p.dir.x, y: -p.dir.y, name: p.dir.opp, opp: p.dir.name };
+            p.reverseDesired = true;
           }
         });
         updateFrenzyUI(true);
@@ -632,6 +978,7 @@
       }
     }
 
+    // 6. Check Relic Collection
     if (activeRelic) {
       const rX = 13.5 * TILE_SIZE;
       const rY = 17 * TILE_SIZE + TILE_SIZE / 2;
@@ -645,12 +992,15 @@
       }
     }
 
+    // 7. Update Pursuers & Check Collisions
     pursuers.forEach(p => {
       updatePursuerAI(p, dt);
 
+      // Collision check with Vampire
       const dist = Math.sqrt(getDistanceSq(vampire.x, vampire.y, p.x, p.y));
       if (dist < 13) {
         if (p.state === 'FRIGHTENED') {
+          // Vampire charms the maiden!
           p.state = 'EATEN';
           womenCharmedChain++;
           const pts = 200 * Math.pow(2, womenCharmedChain - 1);
@@ -660,12 +1010,15 @@
           checkHighScore();
           updateHUD();
         } else if (p.state === 'CHASE' || p.state === 'SCATTER') {
-          deathAnimationTimer = 1.8;
-          playSound('death');
+          if (p.houseState === 'OUTSIDE') {
+            deathAnimationTimer = 1.8;
+            playSound('death');
+          }
         }
       }
     });
 
+    // 8. Update Floating Score Popups
     scorePopups = scorePopups.filter(pop => {
       pop.y -= 18 * dt;
       pop.alpha -= dt * 0.8;
@@ -701,11 +1054,16 @@
   }
 
   // --------------------------------------------------------------------------
-  // Canvas Rendering
+  // Rendering System
   // --------------------------------------------------------------------------
   function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!ctx) return;
 
+    // Background
+    ctx.fillStyle = '#0a040e';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // 1. Draw Maze Tiles
     for (let r = 0; r < ROWS; r++) {
       for (let c = 0; c < COLS; c++) {
         const tile = maze[r][c];
@@ -713,52 +1071,43 @@
         const y = r * TILE_SIZE;
 
         if (tile === 1) {
+          // Crypt Stone Walls
           ctx.fillStyle = '#1e112a';
           ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
-
-          ctx.strokeStyle = '#4c1d95';
-          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = '#6b21a8';
+          ctx.lineWidth = 1;
           ctx.strokeRect(x + 1, y + 1, TILE_SIZE - 2, TILE_SIZE - 2);
-
-          ctx.fillStyle = '#2e1065';
-          ctx.fillRect(x + 3, y + 3, TILE_SIZE - 6, TILE_SIZE - 6);
-        } else if (tile === 4) {
-          ctx.fillStyle = '#e11d48';
-          ctx.fillRect(x, y + 7, TILE_SIZE, 6);
         } else if (tile === 2) {
-          ctx.fillStyle = '#f59e0b';
+          // Ancient Gold Coin
+          ctx.fillStyle = '#fbbf24';
           ctx.beginPath();
-          ctx.arc(x + TILE_SIZE / 2, y + TILE_SIZE / 2, 3, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.fillStyle = '#fef08a';
-          ctx.beginPath();
-          ctx.arc(x + TILE_SIZE / 2 - 1, y + TILE_SIZE / 2 - 1, 1, 0, Math.PI * 2);
+          ctx.arc(x + TILE_SIZE / 2, y + TILE_SIZE / 2, 2.5, 0, Math.PI * 2);
           ctx.fill();
         } else if (tile === 3) {
-          const pulse = 1 + Math.sin(Date.now() * 0.008) * 0.15;
-          const cx = x + TILE_SIZE / 2;
-          const cy = y + TILE_SIZE / 2;
-
-          ctx.save();
-          ctx.translate(cx, cy);
-          ctx.scale(pulse, pulse);
-
-          ctx.fillStyle = '#dc2626';
+          // Blood Packet (Pulsating)
+          const pulse = Math.sin(Date.now() / 150) * 1.5;
+          ctx.fillStyle = '#ef4444';
           ctx.beginPath();
-          ctx.arc(0, 0, 6.5, 0, Math.PI * 2);
+          ctx.arc(x + TILE_SIZE / 2, y + TILE_SIZE / 2, 6 + pulse, 0, Math.PI * 2);
           ctx.fill();
 
-          ctx.fillStyle = '#fca5a5';
+          ctx.fillStyle = '#ffffff';
           ctx.beginPath();
-          ctx.arc(-2, -2, 2, 0, Math.PI * 2);
+          ctx.arc(x + TILE_SIZE / 2 - 2, y + TILE_SIZE / 2 - 2, 2, 0, Math.PI * 2);
           ctx.fill();
-
-          ctx.restore();
+        } else if (tile === 4) {
+          // Crypt Iron Gate
+          ctx.strokeStyle = '#ec4899';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(x, y + TILE_SIZE / 2);
+          ctx.lineTo(x + TILE_SIZE, y + TILE_SIZE / 2);
+          ctx.stroke();
         }
       }
     }
 
+    // 2. Draw Active Gothic Relic
     if (activeRelic) {
       const rx = 13.5 * TILE_SIZE;
       const ry = 17 * TILE_SIZE + TILE_SIZE / 2;
@@ -768,16 +1117,19 @@
       ctx.fillText(activeRelic.icon, rx, ry);
     }
 
+    // 3. Draw Vampire (Player)
     if (deathAnimationTimer > 0) {
       drawBatScatter(vampire.x, vampire.y, 1 - deathAnimationTimer / 1.8);
     } else {
       drawVampire(vampire.x, vampire.y, vampire.dir, vampire.animFrame, frenzyTimer > 0);
     }
 
+    // 4. Draw Pursuers
     pursuers.forEach(p => {
       drawPursuer(p);
     });
 
+    // 5. Draw Floating Score Popups
     scorePopups.forEach(pop => {
       ctx.save();
       ctx.globalAlpha = pop.alpha;
@@ -788,6 +1140,7 @@
       ctx.restore();
     });
 
+    // 6. Overlay Banners
     if (isGameOver) {
       drawBanner('GAME OVER', 'The Count has fallen. Press Restart to rise again.', '#ef4444');
     } else if (isPaused) {
@@ -797,6 +1150,9 @@
     }
   }
 
+  // --------------------------------------------------------------------------
+  // Vector Sprite Drawing Functions
+  // --------------------------------------------------------------------------
   function drawVampire(x, y, dir, frame, isFrenzy) {
     ctx.save();
     ctx.translate(x, y);
@@ -810,6 +1166,7 @@
       ctx.fill();
     }
 
+    // Flowing Cape
     const capeOffset = Math.sin(frame * Math.PI / 2) * 2;
     ctx.fillStyle = '#0f051d';
     ctx.beginPath();
@@ -820,6 +1177,7 @@
     ctx.closePath();
     ctx.fill();
 
+    // Red Cape Lining
     ctx.fillStyle = '#b91c1c';
     ctx.beginPath();
     ctx.moveTo(-5, -3);
@@ -829,11 +1187,13 @@
     ctx.closePath();
     ctx.fill();
 
+    // Head / Face
     ctx.fillStyle = '#f1f5f9';
     ctx.beginPath();
     ctx.arc(0, -2, 6, 0, Math.PI * 2);
     ctx.fill();
 
+    // Widow's Peak Hair
     ctx.fillStyle = '#09090b';
     ctx.beginPath();
     ctx.arc(0, -4, 6, Math.PI, 0, false);
@@ -841,6 +1201,7 @@
     ctx.closePath();
     ctx.fill();
 
+    // Crimson Eyes
     ctx.fillStyle = isFrenzy ? '#ff0033' : '#ef4444';
     let eyeX = 0;
     let eyeY = 0;
@@ -852,6 +1213,7 @@
     ctx.fillRect(-3 + eyeX, -3 + eyeY, 2, 2);
     ctx.fillRect(1 + eyeX, -3 + eyeY, 2, 2);
 
+    // Fangs
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(-2, 1, 1, 2);
     ctx.fillRect(1, 1, 1, 2);
@@ -864,6 +1226,7 @@
     ctx.translate(p.x, p.y);
 
     if (p.state === 'EATEN') {
+      // Ethereal Mist Eyes
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
       ctx.arc(-3, -1, 3, 0, Math.PI * 2);
@@ -877,17 +1240,18 @@
       return;
     }
 
-    const isFrightened = p.state === 'FRIGHTENED';
+    const isFrightened = (p.state === 'FRIGHTENED');
     let dressColor = p.color;
 
     if (isFrightened) {
       if (frenzyTimer < 2.5 && Math.floor(frenzyTimer * 8) % 2 === 0) {
-        dressColor = '#f8fafc';
+        dressColor = '#f8fafc'; // Flashing white
       } else {
-        dressColor = '#38bdf8';
+        dressColor = '#38bdf8'; // Mesmerized azure
       }
     }
 
+    // Victorian Gown
     ctx.fillStyle = dressColor;
     ctx.beginPath();
     ctx.moveTo(-6, -2);
@@ -900,16 +1264,19 @@
     ctx.closePath();
     ctx.fill();
 
+    // Head
     ctx.fillStyle = '#fed7aa';
     ctx.beginPath();
     ctx.arc(0, -4, 5, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = p.id === 'carmilla' ? '#18181b' : p.id === 'mina' ? '#451a03' : p.id === 'lucy' ? '#fde047' : '#9a3412';
+    // Hair
+    ctx.fillStyle = (p.id === 'carmilla') ? '#18181b' : (p.id === 'mina') ? '#451a03' : (p.id === 'lucy') ? '#fde047' : '#9a3412';
     ctx.beginPath();
     ctx.arc(0, -6, 5.5, Math.PI, 0, false);
     ctx.fill();
 
+    // Eyes
     if (isFrightened) {
       ctx.fillStyle = '#0f172a';
       ctx.fillRect(-3, -4, 2, 2);
@@ -973,6 +1340,9 @@
     ctx.restore();
   }
 
+  // --------------------------------------------------------------------------
+  // HUD Status Display
+  // --------------------------------------------------------------------------
   function updateHUD() {
     const scoreEl = document.getElementById('bb-score');
     const highEl = document.getElementById('bb-high');
@@ -992,6 +1362,9 @@
     }
   }
 
+  // --------------------------------------------------------------------------
+  // Main Game Loop
+  // --------------------------------------------------------------------------
   let lastTime = 0;
   function gameLoop(time) {
     if (!lastTime) lastTime = time;
@@ -1004,6 +1377,9 @@
     requestAnimationFrame(gameLoop);
   }
 
+  // --------------------------------------------------------------------------
+  // Initialization & Controls
+  // --------------------------------------------------------------------------
   function startNewGame() {
     score = 0;
     lives = 3;
@@ -1014,6 +1390,10 @@
     frenzyTimer = 0;
     deathAnimationTimer = 0;
     levelClearTimer = 0;
+
+    waveIndex = 0;
+    waveTimer = 7.0;
+    globalMode = 'SCATTER';
 
     resetMap();
     vampire.reset();
@@ -1046,6 +1426,7 @@
       if (savedHigh) highScore = parseInt(savedHigh, 10) || 0;
     } catch (e) {}
 
+    // Keyboard bindings
     window.addEventListener('keydown', e => {
       switch (e.key) {
         case 'ArrowUp':
@@ -1079,6 +1460,7 @@
       }
     });
 
+    // Mobile Virtual Touch D-pad
     const dpadMap = {
       'btn-bb-up': DIRS.UP,
       'btn-bb-down': DIRS.DOWN,
@@ -1099,6 +1481,7 @@
       }
     });
 
+    // Touch Swipe on Canvas
     let touchStartX = 0;
     let touchStartY = 0;
     canvas.addEventListener('touchstart', e => {
@@ -1124,6 +1507,7 @@
       }
     }, { passive: true });
 
+    // Header buttons
     const btnNew = document.getElementById('btn-bb-restart');
     const btnSound = document.getElementById('btn-bb-sound');
     const btnPause = document.getElementById('btn-bb-pause');

@@ -160,12 +160,13 @@ require_once __DIR__ . '/config.php';
               </li>
             </ul>
 
-            <h4>The 4 Pursuing Maidens</h4>
+            <h4>The 4 Pursuing Maidens &amp; Authentic 1980 Arcade AI</h4>
+            <p style="font-size: 0.88rem; color: var(--muted); margin-bottom: 8px;">Pursuers switch between timed <strong>Scatter</strong> waves (patrolling home corners) and <strong>Chase</strong> waves (hunting the Vampire). At intersections, turns follow authentic arcade tie-breaking priority (<code>UP &gt; LEFT &gt; DOWN &gt; RIGHT</code>) with forbidden &quot;No-Up&quot; zones and 50% speed penalties inside the warp tunnels.</p>
             <ul>
-              <li><strong style="color: #ef4444;">Carmilla (Crimson Gown):</strong> The Direct Shadow. Aggressively follows your exact tile coordinates.</li>
-              <li><strong style="color: #f472b6;">Mina (Rose Gown):</strong> The Ambush Scout. Anticipates where you are heading by targeting 4 tiles ahead of your current direction.</li>
-              <li><strong style="color: #22d3ee;">Lucy (Cyan Gown):</strong> The Flanker. Calculates a dynamic pincer intercept vector based on Carmilla's location.</li>
-              <li><strong style="color: #fbbf24;">Lenore (Amber Gown):</strong> The Timid Stalker. Approaches when you are far away, but retreats to her corner if you get within 8 tiles.</li>
+              <li><strong style="color: #ef4444;">Carmilla (Crimson Gown) — The Shadow:</strong> Relentlessly tracks your exact tile. Features <strong>Cruise Elroy</strong>: speed accelerates when remaining coins drop to 20 and 10, refusing to scatter in late-game!</li>
+              <li><strong style="color: #f472b6;">Mina (Rose Gown) — The Ambush Scout:</strong> Targets 4 tiles ahead of your path. Features the authentic 1980 vector overflow quirk: when you face UP, she targets 4 tiles UP and 4 tiles LEFT.</li>
+              <li><strong style="color: #22d3ee;">Lucy (Cyan Gown) — The Flanker:</strong> Forms a lethal pincer trap by calculating a vector from Carmilla through 2 tiles ahead of you and doubling it, boxing you in.</li>
+              <li><strong style="color: #fbbf24;">Lenore (Amber Gown) — The Feigning Stalker:</strong> Aggressively stalks you when far away (&ge; 8 tiles), but retreats to her bottom-left scatter corner when closing within 8 tiles.</li>
             </ul>
 
             <div style="margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
