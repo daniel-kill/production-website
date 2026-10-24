@@ -28,3 +28,7 @@ Thumbs.db
 .idea/
 *.suo
 *.user
+
+# Local application configuration and runtime data
+config.local.php
+data/

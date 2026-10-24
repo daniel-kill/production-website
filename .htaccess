@@ -1,0 +1,44 @@
+# ----------------------------------------------------------------------
+# Security & Access Controls
+# ----------------------------------------------------------------------
+
+# Prevent directory indexing
+Options -Indexes
+
+# Block hidden files and directories (like .git, .env), allowing .well-known
+RewriteEngine On
+RewriteRule (^|/)\.(?!well-known) - [F]
+
+# Block direct access to configuration and schema files
+<FilesMatch "^(config\.local\.php|config\.example\.php|schema\.sql|\.gitignore|README\.md)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# ----------------------------------------------------------------------
+# Security Headers
+# ----------------------------------------------------------------------
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# ----------------------------------------------------------------------
+# Asset Caching
+# ----------------------------------------------------------------------
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType application/pdf "access plus 1 month"
+</IfModule>
