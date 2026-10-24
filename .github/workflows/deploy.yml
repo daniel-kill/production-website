@@ -24,25 +24,11 @@ jobs:
           port: ${{ secrets.HOSTINGER_PORT }}
           script_stop: true
           script: |
-            set -e
-            set -x
-            echo "Navigating to web root..."
             cd /home/u922787661/domains/danielkill.online/public_html
-
-            if [ ! -d ".git" ]; then
-              echo "Target directory has no git repo. Initializing fresh clone..."
-              rm -f default.php
-              git clone https://github.com/daniel-kill/production-website.git .
-            else
-              echo "Fetching and hard-resetting to origin/main..."
-              git fetch origin main
-              git reset --hard origin/main
-            fi
-
-            # Set standard Hostinger directory & file permissions
+            git fetch origin main
+            git reset --hard origin/main
             find . -type f -exec chmod 644 {} +
             find . -type d -exec chmod 755 {} +
             mkdir -p data
             chmod 750 data
-
             echo "Deployment completed successfully at $(date -u)"
