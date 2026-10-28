@@ -97,6 +97,27 @@ $csrfToken = getCsrfToken();
         </div>
         <div class="grid">
           <article class="card">
+            <div class="card-icon" aria-hidden="true">☀️</div>
+            <h3>Sunfire Discord Bot</h3>
+            <p>Resilient, autonomous Discord bot written in Go using discordgo and managed by systemd, featuring real-time notification dispatchers for Twitch, YouTube, Kick, Spotify, Free Deals, and Hermes AI tips.</p>
+            <p class="card-link"><a href="https://github.com/daniel-kill/Sunfire" target="_blank" rel="noopener noreferrer">Explore Sunfire ↗</a></p>
+          </article>
+
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">🧠</div>
+            <h3>LLMForge Terminal Console</h3>
+            <p>Interactive terminal forge and multi-model CLI in Python for OpenRouter LLMs, featuring streaming markdown rendering, token usage analytics, and instant model switching.</p>
+            <p class="card-link"><a href="https://github.com/daniel-kill/LLMForge" target="_blank" rel="noopener noreferrer">Explore LLMForge ↗</a></p>
+          </article>
+
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">☁️</div>
+            <h3>Cloudflare API Lab</h3>
+            <p>Interactive terminal workbench and testing suite for Cloudflare Workers AI and Edge Platform—evaluating LLMs, text embeddings, and generative vision models directly from the CLI.</p>
+            <p class="card-link"><a href="https://github.com/daniel-kill/cloudflare-api-lab" target="_blank" rel="noopener noreferrer">Explore API Lab ↗</a></p>
+          </article>
+
+          <article class="card">
             <div class="card-icon" aria-hidden="true">⚡</div>
             <h3>DevPulse</h3>
             <p>A high-performance Python CLI utility designed to audit workspace git repositories, track working tree cleanliness, and verify GPG security posture.</p>
@@ -129,17 +150,17 @@ $csrfToken = getCsrfToken();
           </article>
 
           <article class="card">
-            <div class="card-icon" aria-hidden="true">⚙️</div>
-            <h3>Developer Utilities Suite</h3>
-            <p>Multi-language system tools: C# File Organizer, Node.js Log Analyzer, PowerShell System Health Reporter, and POSIX Safe Backup script.</p>
-            <p class="card-link"><a href="https://github.com/daniel-kill/portfolio-projects" target="_blank" rel="noopener noreferrer">Explore Utilities Suite ↗</a></p>
-          </article>
-
-          <article class="card">
             <div class="card-icon" aria-hidden="true">🌐</div>
             <h3>Production Website</h3>
             <p>The source code powering danielkill.online. Built with semantic HTML5, modern CSS3 custom properties, PHP 8.3 backend, and MySQL telemetry.</p>
             <p class="card-link"><a href="https://github.com/daniel-kill/production-website" target="_blank" rel="noopener noreferrer">View Site Source ↗</a></p>
+          </article>
+
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">⚙️</div>
+            <h3>Developer Utilities Suite</h3>
+            <p>Multi-language system tools: C# File Organizer, Node.js Log Analyzer, PowerShell System Health Reporter, and POSIX Safe Backup script.</p>
+            <p class="card-link"><a href="https://github.com/daniel-kill/portfolio-projects" target="_blank" rel="noopener noreferrer">Explore Utilities Suite ↗</a></p>
           </article>
         </div>
       </section>
