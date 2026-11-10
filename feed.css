@@ -128,10 +128,16 @@
   border: 1px solid rgba(255, 102, 0, 0.3);
 }
 
-.source-tag.bbc-technology {
-  background: rgba(235, 33, 46, 0.12);
-  color: #ff6b78;
-  border: 1px solid rgba(235, 33, 46, 0.3);
+.source-tag.the-verge {
+  background: rgba(225, 18, 153, 0.12);
+  color: #ff47bc;
+  border: 1px solid rgba(225, 18, 153, 0.3);
+}
+
+.source-tag.techcrunch {
+  background: rgba(10, 166, 74, 0.12);
+  color: #2ed573;
+  border: 1px solid rgba(10, 166, 74, 0.3);
 }
 
 .source-tag.github-blog {

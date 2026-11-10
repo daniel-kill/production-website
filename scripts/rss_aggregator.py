@@ -10,7 +10,7 @@ import json
 import sqlite3
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -19,6 +19,14 @@ os.makedirs(DATA_DIR, exist_ok=True)
 
 DB_PATH = os.path.join(DATA_DIR, "feed_cache.sqlite")
 JSON_PATH = os.path.join(DATA_DIR, "feed.json")
+
+def find_node(parent, *tag_names):
+    """Safely find the first matching XML child node without triggering truthiness deprecation warnings."""
+    for tag in tag_names:
+        found = parent.find(tag)
+        if found is not None:
+            return found
+    return None
 
 # Initialize SQLite database
 conn = sqlite3.connect(DB_PATH)
@@ -37,7 +45,8 @@ conn.commit()
 
 FEEDS = [
     {"name": "Hacker News", "url": "https://news.ycombinator.com/rss"},
-    {"name": "BBC Technology", "url": "https://feeds.bbci.co.uk/news/technology/rss.xml"},
+    {"name": "The Verge", "url": "https://www.theverge.com/rss/index.xml"},
+    {"name": "TechCrunch", "url": "https://techcrunch.com/feed/"},
     {"name": "GitHub Blog", "url": "https://github.blog/feed/"},
     {"name": "Ars Technica", "url": "https://feeds.arstechnica.com/arstechnica/index"}
 ]
@@ -67,24 +76,23 @@ for feed in FEEDS:
         feed_added = 0
         for item in items:
             # Title
-            t_node = item.find("title") or item.find("{http://www.w3.org/2005/Atom}title")
+            t_node = find_node(item, "title", "{http://www.w3.org/2005/Atom}title")
             title = t_node.text.strip() if t_node is not None and t_node.text else "Untitled"
 
             # Link
-            l_node = item.find("link") or item.find("{http://www.w3.org/2005/Atom}link")
+            l_node = find_node(item, "link", "{http://www.w3.org/2005/Atom}link")
+            link = ""
             if l_node is not None:
                 link = l_node.get("href") or l_node.text or ""
-            else:
-                link = ""
             link = link.strip()
 
             # GUID
-            g_node = item.find("guid") or item.find("id") or item.find("{http://www.w3.org/2005/Atom}id")
+            g_node = find_node(item, "guid", "id", "{http://www.w3.org/2005/Atom}id")
             guid = (g_node.text.strip() if g_node is not None and g_node.text else link) or link
 
             # PubDate
-            d_node = item.find("pubDate") or item.find("published") or item.find("{http://www.w3.org/2005/Atom}published") or item.find("{http://www.w3.org/2005/Atom}updated")
-            pub_date = d_node.text.strip() if d_node is not None and d_node.text else datetime.utcnow().isoformat()
+            d_node = find_node(item, "pubDate", "published", "{http://www.w3.org/2005/Atom}published", "{http://www.w3.org/2005/Atom}updated")
+            pub_date = d_node.text.strip() if d_node is not None and d_node.text else datetime.now(timezone.utc).isoformat()
 
             if guid and link and title:
                 cursor.execute(
@@ -118,7 +126,7 @@ articles_list = [
 ]
 
 export_data = {
-    "updated_at": datetime.utcnow().isoformat() + "Z",
+    "updated_at": datetime.now(timezone.utc).isoformat(),
     "total": len(articles_list),
     "articles": articles_list
 }

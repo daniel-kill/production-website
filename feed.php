@@ -106,7 +106,8 @@ function timeAgo($dateStr) {
 function sourceClass($sourceName) {
     $s = strtolower(trim($sourceName));
     if (strpos($s, 'hacker') !== false) return 'hacker-news';
-    if (strpos($s, 'bbc') !== false) return 'bbc-technology';
+    if (strpos($s, 'verge') !== false) return 'the-verge';
+    if (strpos($s, 'crunch') !== false) return 'techcrunch';
     if (strpos($s, 'github') !== false) return 'github-blog';
     if (strpos($s, 'ars') !== false) return 'ars-technica';
     return 'default-source';
@@ -118,7 +119,7 @@ function sourceClass($sourceName) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b1020">
-  <meta name="description" content="Live Tech & Developer Dispatch aggregated by Daniel Kill. Real-time RSS feeds from Hacker News, BBC Tech, GitHub, and Ars Technica.">
+  <meta name="description" content="Live Tech & Developer Dispatch aggregated by Daniel Kill. Real-time RSS feeds from Hacker News, The Verge, TechCrunch, GitHub, and Ars Technica.">
   <meta property="og:title" content="Live Tech & Dev Feed — Daniel Kill">
   <meta property="og:description" content="Real-time automated developer and tech journalism aggregation powered by Bun and SQLite.">
   <meta property="og:type" content="website">

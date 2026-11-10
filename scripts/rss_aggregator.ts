@@ -26,7 +26,8 @@ db.run(`
 
 const FEEDS = [
   { name: "Hacker News", code: "hn", url: "https://news.ycombinator.com/rss" },
-  { name: "BBC Technology", code: "bbc", url: "https://feeds.bbci.co.uk/news/technology/rss.xml" },
+  { name: "The Verge", code: "verge", url: "https://www.theverge.com/rss/index.xml" },
+  { name: "TechCrunch", code: "tc", url: "https://techcrunch.com/feed/" },
   { name: "GitHub Blog", code: "github", url: "https://github.blog/feed/" },
   { name: "Ars Technica", code: "ars", url: "https://feeds.arstechnica.com/arstechnica/index" }
 ];
