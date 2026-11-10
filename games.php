@@ -32,6 +32,7 @@ require_once __DIR__ . '/config.php';
       <a class="wordmark" href="index.php" aria-label="Daniel Kill home">DK<span>.</span></a>
       <nav class="nav-links">
         <a href="index.php#projects">Projects</a>
+        <a href="feed.php">Feed <span class="badge-tag">Live</span></a>
         <a href="games.php" class="nav-highlight">Games <span class="badge-tag">Playable</span></a>
         <a href="index.php#discord">Discord</a>
         <a href="index.php#contact">Contact</a>

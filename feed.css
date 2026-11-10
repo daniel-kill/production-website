@@ -1,0 +1,207 @@
+/**
+ * Live Feed Styles — danielkill.online
+ * Maintainer: Daniel Kill <daniel@danielkill.online>
+ */
+
+.feed-hero {
+  padding: clamp(35px, 6vw, 65px) 0 35px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 25px;
+}
+
+.feed-badge-pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(140, 230, 208, 0.08);
+  border: 1px solid rgba(140, 230, 208, 0.25);
+  color: var(--accent);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.feed-pulse-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--accent);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(140, 230, 208, 0.9);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.feed-meta-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.feed-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 15px 0 25px;
+}
+
+.feed-filter-btn {
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  padding: 7px 15px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.feed-filter-btn:hover {
+  background: rgba(140, 230, 208, 0.1);
+  border-color: var(--line-hover);
+  color: var(--text);
+}
+
+.feed-filter-btn.active {
+  background: rgba(140, 230, 208, 0.16);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.feed-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.feed-card {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.feed-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--line-hover);
+  background: linear-gradient(145deg, rgba(25, 36, 62, 0.9), rgba(14, 20, 36, 0.85));
+}
+
+.feed-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.source-tag {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.4px;
+}
+
+.source-tag.hacker-news {
+  background: rgba(255, 102, 0, 0.12);
+  color: #ff893b;
+  border: 1px solid rgba(255, 102, 0, 0.3);
+}
+
+.source-tag.bbc-technology {
+  background: rgba(235, 33, 46, 0.12);
+  color: #ff6b78;
+  border: 1px solid rgba(235, 33, 46, 0.3);
+}
+
+.source-tag.github-blog {
+  background: rgba(140, 230, 208, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(140, 230, 208, 0.3);
+}
+
+.source-tag.ars-technica {
+  background: rgba(255, 115, 0, 0.12);
+  color: #ffa154;
+  border: 1px solid rgba(255, 115, 0, 0.3);
+}
+
+.source-tag.default-source {
+  background: rgba(156, 174, 255, 0.12);
+  color: var(--accent2);
+  border: 1px solid rgba(156, 174, 255, 0.25);
+}
+
+.feed-date {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+}
+
+.feed-title {
+  font-family: var(--font-display);
+  font-size: 1.12rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.feed-title a {
+  color: var(--text);
+  text-decoration: none;
+  transition: color 0.2s;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.feed-title a:hover {
+  color: var(--accent);
+}
+
+.feed-arrow {
+  font-size: 0.85em;
+  opacity: 0.6;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.feed-title a:hover .feed-arrow {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+
+.feed-footer-stats {
+  margin-top: 35px;
+  padding: 20px;
+  text-align: center;
+  background: var(--bg-soft);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.feed-footer-stats code {
+  color: var(--accent);
+  font-family: var(--font-mono);
+}

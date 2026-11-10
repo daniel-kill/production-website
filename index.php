@@ -29,7 +29,8 @@ $csrfToken = getCsrfToken();
       <a class="wordmark" href="#" aria-label="Daniel Kill home">DK<span>.</span></a>
       <nav class="nav-links">
         <a href="#projects">Projects</a>
-        <a href="games.php" class="nav-highlight">Games <span class="badge-tag">Playable</span></a>
+        <a href="feed.php" class="nav-highlight">Feed <span class="badge-tag">Live</span></a>
+        <a href="games.php">Games <span class="badge-tag">Playable</span></a>
         <a href="#discord">Discord</a>
         <a href="#contact">Contact</a>
       </nav>
@@ -48,6 +49,7 @@ $csrfToken = getCsrfToken();
           <p class="lead">Software developer, automation enthusiast, and open-source creator. I build developer CLIs, Discord community bots, security tools, and interactive terminal simulations.</p>
           <div class="actions">
             <a class="btn btn-primary" href="#contact">Get in touch <span aria-hidden="true">↓</span></a>
+            <a class="btn" href="feed.php">📡 Live Feed <span aria-hidden="true">→</span></a>
             <a class="btn" href="games.php">🎮 Play Games Arcade <span aria-hidden="true">→</span></a>
             <a class="btn" href="https://github.com/daniel-kill?tab=repositories" target="_blank" rel="noopener noreferrer">GitHub Repositories <span aria-hidden="true">↗</span></a>
             <a class="btn" href="assets/Resume_Daniel-Kill.pdf" target="_blank" rel="noopener noreferrer">Resume <span aria-hidden="true">↗</span></a>
@@ -136,6 +138,17 @@ $csrfToken = getCsrfToken();
             <h3>Curio.Byte Discord Bot</h3>
             <p>A modular discord.js bot featuring AI provider routing, persistent SQLite storage, server telemetry, automated backups, and moderation commands.</p>
             <p class="card-link"><a href="https://github.com/daniel-kill/curio-byte" target="_blank" rel="noopener noreferrer">Explore Curio.Byte ↗</a></p>
+          </article>
+
+          <article class="card card-featured">
+            <div class="card-badge">Automated RSS</div>
+            <div class="card-icon" aria-hidden="true">📡</div>
+            <h3>Live Tech &amp; Dev Feed</h3>
+            <p>Real-time aggregated tech news and open-source dispatches powered by an automated Bun and SQLite background pipeline on Hostinger.</p>
+            <div class="card-links">
+              <a class="btn btn-primary btn-sm" href="feed.php">📡 View Live Feed</a>
+              <a class="card-link" href="feed.php?format=json" target="_blank" rel="noopener noreferrer">JSON API ↗</a>
+            </div>
           </article>
 
           <article class="card card-featured">
@@ -297,6 +310,8 @@ $csrfToken = getCsrfToken();
         <span class="footer-domain">danielkill.online</span>
       </div>
       <div class="actions" style="gap:14px;justify-content:flex-end;flex-wrap:wrap;">
+        <a href="feed.php">Feed ↗</a>
+        <a href="games.php">Games ↗</a>
         <a href="https://github.com/daniel-kill?tab=repositories" target="_blank" rel="noopener noreferrer">Repositories ↗</a>
         <a href="https://linktr.ee/daniel_kill" target="_blank" rel="noopener noreferrer">Linktree ↗</a>
         <a href="https://discord.gg/muPYhD7MEM" target="_blank" rel="noopener noreferrer">Discord ↗</a>
