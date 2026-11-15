@@ -1,0 +1,10 @@
+# Local configuration and secrets
+.private/
+.logs/
+.env
+
+# Editor & OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp

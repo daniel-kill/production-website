@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="Personal website and coding projects by Daniel Kill.">
+  <title>Daniel Kill — Personal Site</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="wrap">
+    <header class="nav">
+      <a class="wordmark" href="#" aria-label="Daniel Kill home">DK<span>.</span></a>
+      <div class="nav-note"><span class="dot" aria-hidden="true"></span> Personal site · Online</div>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="intro-title">
+        <div>
+          <p class="eyebrow">Hello, I'm Daniel</p>
+          <h1 id="intro-title">I build software<br><span class="surname">and useful tools.</span></h1>
+          <p class="lead">I make small software projects, run a Discord community, and learn by trying things out. This site is where I share what I'm working on.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="https://danielkill.online" target="_blank" rel="noopener noreferrer">Production Site (danielkill.online) <span aria-hidden="true">↗</span></a>
+            <a class="btn" href="https://github.com/daniel-kill?tab=repositories" target="_blank" rel="noopener noreferrer">GitHub Repositories <span aria-hidden="true">↗</span></a>
+            <a class="btn" href="mailto:daniel@danielkill.online">Get in touch <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="portrait-frame">
+          <img class="portrait" src="images/daniel%40danielkill.online_AVATAR.webp" alt="Portrait of Daniel Kill" loading="eager" decoding="async">
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="about-title">
+        <div class="section-head">
+          <div><p class="section-kicker">A little about me</p><h2 id="about-title">What I'm into</h2></div>
+          <p class="section-intro">A few things that shape the projects I take on.</p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">⌘</div>
+            <h3>Building things</h3>
+            <p>I like making small tools and scripts that save time or make a task easier.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">✳</div>
+            <h3>Always learning</h3>
+            <p>I learn new tools by trying them in a project and seeing what works.</p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">↗</div>
+            <h3>Thoughtful design</h3>
+            <p>I value interfaces that are clear and easy to use, without getting in the way.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="projects-title">
+        <div class="section-head">
+          <div><p class="section-kicker">Open source & repositories</p><h2 id="projects-title">Public Repositories</h2></div>
+          <p class="section-intro">Developer tools, security scanners, Discord automation, and terminal simulations.</p>
+        </div>
+        <div class="grid">
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">☀️</div>
+            <h3>Sunfire Discord Bot</h3>
+            <p>Resilient, autonomous Discord bot written in Go using discordgo, daemonized with systemd, with live notification dispatchers for Twitch, YouTube, Kick, Spotify, Free Deals, and Hermes AI tips.</p>
+            <p style="margin-top:18px"><a href="https://github.com/daniel-kill/Sunfire" target="_blank" rel="noopener noreferrer">Explore Sunfire ↗</a></p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">🧠</div>
+            <h3>LLMForge Terminal Console</h3>
+            <p>Interactive terminal forge and multi-model CLI in Python for OpenRouter LLMs, featuring live markdown streaming, token usage analytics, and instant model switching.</p>
+            <p style="margin-top:18px"><a href="https://github.com/daniel-kill/LLMForge" target="_blank" rel="noopener noreferrer">Explore LLMForge ↗</a></p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">☁️</div>
+            <h3>Cloudflare API Lab</h3>
+            <p>Interactive terminal workbench and testing suite for Cloudflare Workers AI and Edge Platform—evaluating LLMs, text embeddings, and generative vision models directly from the CLI.</p>
+            <p style="margin-top:18px"><a href="https://github.com/daniel-kill/cloudflare-api-lab" target="_blank" rel="noopener noreferrer">Explore API Lab ↗</a></p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">⚡</div>
+            <h3>DevPulse</h3>
+            <p>A high-performance Python CLI utility designed to audit workspace git repositories, track working trees, and verify GPG security posture.</p>
+            <p style="margin-top:18px"><a href="https://github.com/daniel-kill/devpulse" target="_blank" rel="noopener noreferrer">Explore DevPulse ↗</a></p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">🛡️</div>
+            <h3>Secret Sentinel</h3>
+            <p>A high-throughput secret and credential scanner with Shannon entropy analysis, interactive CLI TUI, and pre-commit hooks for leak prevention.</p>
+            <p style="margin-top:18px"><a href="https://github.com/daniel-kill/secret-sentinel" target="_blank" rel="noopener noreferrer">Explore Secret Sentinel ↗</a></p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">🤖</div>
+            <h3>Curio.Byte Discord Bot</h3>
+            <p>A modular Node.js & discord.js bot featuring AI provider integrations, persistent SQLite storage, server telemetry, and admin moderation suites.</p>
+            <p style="margin-top:18px"><a href="https://github.com/daniel-kill/curio-byte" target="_blank" rel="noopener noreferrer">Explore Curio.Byte ↗</a></p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">🎮</div>
+            <h3>BloodByte &amp; Retro Games</h3>
+            <p>Browser-playable retro games and terminal simulations—featuring Gothic arcade maze runner BloodByte, Wizard's Castle (1980 RPG), and Dracula 1777.</p>
+            <p style="margin-top:18px"><a href="https://github.com/daniel-kill/bloodbyte" target="_blank" rel="noopener noreferrer">Explore BloodByte ↗</a></p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">🌐</div>
+            <h3>Production Website</h3>
+            <p>The production deployment powering danielkill.online. Features semantic HTML5, PHP 8.3 backend, MySQL telemetry, and the playable browser Retro Arcade Hub.</p>
+            <p style="margin-top:18px"><a href="https://github.com/daniel-kill/production-website" target="_blank" rel="noopener noreferrer">View Site Source ↗</a></p>
+          </article>
+          <article class="card">
+            <div class="card-icon" aria-hidden="true">⚙️</div>
+            <h3>Developer Utilities Suite</h3>
+            <p>A modular suite of scripting tools: C# File Organizer, Node.js Log Analyzer, PowerShell System Health Reporter, and POSIX Safe Backup script.</p>
+            <p style="margin-top:18px"><a href="https://github.com/daniel-kill/portfolio-projects" target="_blank" rel="noopener noreferrer">Explore Utilities Suite ↗</a></p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="discord-title">
+        <div class="section-head">
+          <div><p class="section-kicker">Community & tools</p><h2 id="discord-title">Code, Build, Repeat</h2></div>
+          <p class="section-intro">A Discord community for sharing projects, asking questions, and learning together.</p>
+        </div>
+        <div class="discord-panel">
+          <div class="discord-copy">
+            <div class="discord-mark" aria-hidden="true">⌁</div>
+            <h3>Meet Curio.Byte</h3>
+            <p>I built Curio.Byte for the server. It can show the portfolio, answer questions through configured AI providers, and help admins manage moderation, channels, and roles.</p>
+            <div class="actions">
+              <a class="btn btn-primary" href="https://discord.com/oauth2/authorize?client_id=1557933718193315940&amp;permissions=8&amp;integration_type=0&amp;scope=bot" target="_blank" rel="noopener noreferrer">Invite Curio.Byte <span aria-hidden="true">↗</span></a>
+              <a class="btn" href="https://github.com/daniel-kill/curio-byte" target="_blank" rel="noopener noreferrer">View bot source <span aria-hidden="true">↗</span></a>
+              <a class="btn" href="https://discord.com/channels/1557930395868209162" target="_blank" rel="noopener noreferrer">Open community <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+          <div class="discord-widget">
+            <iframe
+              src="https://discord.com/widget?id=1557930395868209162&amp;theme=dark"
+              title="Code, Build, Repeat Discord server widget"
+              width="350"
+              height="500"
+              allowtransparency="true"
+              frameborder="0"
+              sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+              loading="lazy">
+            </iframe>
+          </div>
+        </div>
+      </section>
+
+      <section class="contact" aria-labelledby="contact-title">
+        <div>
+          <p class="section-kicker">Contact</p>
+          <h2 id="contact-title">Get in touch.</h2>
+          <p>Email me about a project, a question, or anything else.</p>
+        </div>
+        <div class="actions" style="justify-content:flex-end;">
+          <a class="btn" href="https://linktr.ee/daniel_kill" target="_blank" rel="noopener noreferrer">Linktree <span aria-hidden="true">↗</span></a>
+          <a class="btn" href="https://discord.gg/muPYhD7MEM" target="_blank" rel="noopener noreferrer">Discord <span aria-hidden="true">↗</span></a>
+          <a class="btn btn-primary" href="assets/Resume_Daniel-Kill.pdf" target="_blank" rel="noopener noreferrer">Resume <span aria-hidden="true">↗</span></a>
+          <a class="btn" href="assets/Daniel_Kill_(Daniel_Kill's_GPG_Key)_0x9B542AA270F867E5_public.asc" target="_blank" rel="noopener noreferrer">GPG key <span aria-hidden="true">↗</span></a>
+          <a class="btn" href="mailto:daniel@danielkill.online">Email Daniel <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>© <span id="year">2026</span> Daniel Kill</span>
+      <div class="actions" style="gap:10px;justify-content:flex-end;flex-wrap:wrap;">
+        <a href="https://danielkill.online" target="_blank" rel="noopener noreferrer">danielkill.online ↗</a>
+        <a href="https://daniel-danielkill-online.pages.dev/" target="_blank" rel="noopener noreferrer">Pages Mirror ↗</a>
+        <a href="https://linktr.ee/daniel_kill" target="_blank" rel="noopener noreferrer">Linktree ↗</a>
+        <a href="https://github.com/daniel-kill?tab=repositories" target="_blank" rel="noopener noreferrer">GitHub Repositories ↗</a>
+        <a href="https://discord.gg/muPYhD7MEM" target="_blank" rel="noopener noreferrer">Discord ↗</a>
+      </div>
+    </footer>
+  </div>
+  <script src="script.js" defer></script>
+  <script>document.getElementById("year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
