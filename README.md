@@ -36,6 +36,7 @@ High-performance, secure portfolio and service platform designed for reliability
 This repository houses the following consolidated developer tools and archives:
 
 - [**LLMForge**](LLMForge/): Interactive terminal forge & multi-model CLI in Python for OpenRouter and Groq LLMs with markdown streaming, dual provider switching, and token metrics.
+- [**cloudflare-api-lab**](cloudflare-api-lab/): Interactive terminal workbench and testing suite for Cloudflare Workers AI (LLMs, embeddings, vision) and Edge Platform.
 - [**devpulse**](devpulse/): High-performance Python CLI utility for workspace git repository auditing, working tree health monitoring, and GPG security verification.
 - [**secret-sentinel**](secret-sentinel/): High-throughput secrets, API tokens, and credentials security scanner using Shannon entropy analysis, CLI TUI, and pre-commit hooks.
 - [**portfolio-projects**](portfolio-projects/): Modular developer utilities suite featuring C# File Organizer, Node.js Log Analyzer, PowerShell System Health Reporter, and POSIX Safe Backup script.

@@ -116,7 +116,7 @@ $csrfToken = getCsrfToken();
             <div class="card-icon" aria-hidden="true">☁️</div>
             <h3>Cloudflare API Lab</h3>
             <p>Interactive terminal workbench and testing suite for Cloudflare Workers AI and Edge Platform—evaluating LLMs, text embeddings, and generative vision models directly from the CLI.</p>
-            <p class="card-link"><a href="https://github.com/daniel-kill/cloudflare-api-lab" target="_blank" rel="noopener noreferrer">Explore API Lab ↗</a></p>
+            <p class="card-link"><a href="https://github.com/daniel-kill/production-website/tree/main/cloudflare-api-lab" target="_blank" rel="noopener noreferrer">Explore API Lab ↗</a></p>
           </article>
 
           <article class="card">
