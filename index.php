@@ -109,7 +109,7 @@ $csrfToken = getCsrfToken();
             <div class="card-icon" aria-hidden="true">🧠</div>
             <h3>LLMForge Terminal Console</h3>
             <p>Interactive terminal forge and multi-model CLI in Python for OpenRouter LLMs, featuring streaming markdown rendering, token usage analytics, and instant model switching.</p>
-            <p class="card-link"><a href="https://github.com/daniel-kill/LLMForge" target="_blank" rel="noopener noreferrer">Explore LLMForge ↗</a></p>
+            <p class="card-link"><a href="https://github.com/daniel-kill/production-website/tree/main/LLMForge" target="_blank" rel="noopener noreferrer">Explore LLMForge ↗</a></p>
           </article>
 
           <article class="card">
@@ -123,14 +123,14 @@ $csrfToken = getCsrfToken();
             <div class="card-icon" aria-hidden="true">⚡</div>
             <h3>DevPulse</h3>
             <p>A high-performance Python CLI utility designed to audit workspace git repositories, track working tree cleanliness, and verify GPG security posture.</p>
-            <p class="card-link"><a href="https://github.com/daniel-kill/devpulse" target="_blank" rel="noopener noreferrer">Explore DevPulse ↗</a></p>
+            <p class="card-link"><a href="https://github.com/daniel-kill/production-website/tree/main/devpulse" target="_blank" rel="noopener noreferrer">Explore DevPulse ↗</a></p>
           </article>
 
           <article class="card">
             <div class="card-icon" aria-hidden="true">🛡️</div>
             <h3>Secret Sentinel</h3>
             <p>A high-throughput secret, token, and credential scanner using Shannon entropy analysis, CLI TUI, and automated pre-commit security verification.</p>
-            <p class="card-link"><a href="https://github.com/daniel-kill/secret-sentinel" target="_blank" rel="noopener noreferrer">Explore Secret Sentinel ↗</a></p>
+            <p class="card-link"><a href="https://github.com/daniel-kill/production-website/tree/main/secret-sentinel" target="_blank" rel="noopener noreferrer">Explore Secret Sentinel ↗</a></p>
           </article>
 
           <article class="card">
@@ -173,7 +173,7 @@ $csrfToken = getCsrfToken();
             <div class="card-icon" aria-hidden="true">⚙️</div>
             <h3>Developer Utilities Suite</h3>
             <p>Multi-language system tools: C# File Organizer, Node.js Log Analyzer, PowerShell System Health Reporter, and POSIX Safe Backup script.</p>
-            <p class="card-link"><a href="https://github.com/daniel-kill/portfolio-projects" target="_blank" rel="noopener noreferrer">Explore Utilities Suite ↗</a></p>
+            <p class="card-link"><a href="https://github.com/daniel-kill/production-website/tree/main/portfolio-projects" target="_blank" rel="noopener noreferrer">Explore Utilities Suite ↗</a></p>
           </article>
         </div>
       </section>

@@ -21,12 +21,25 @@ High-performance, secure portfolio and service platform designed for reliability
 ## ✨ Features
 
 - **Interactive Retro Games &amp; Arcade Hub (`games.php`, `draculaland.php`, `bloodbyte.php`):** Playable in-browser retro CRT terminals running Daniel Kill's complete ports of *The Wizard's Castle (1980 RPG)*, *Draculaland: Castle Dracula (1777 Scott Adams IF)*, and *BloodByte* (Gothic Vampire Arcade Maze Runner) with full audio synthesis, virtual D-pad controls, particle effects, and local state saving.
-- **Portfolio & Open-Source Showcase:** Direct interactive cards linking all public repositories (`Sunfire`, `LLMForge`, `cloudflare-api-lab`, `devpulse`, `secret-sentinel`, `curio-byte`, `games`, `bloodbyte`, `portfolio-projects`, and `production-website`).
+- **Portfolio & Open-Source Showcase:** Direct interactive cards linking all public repositories and integrated monorepo modules (`Sunfire`, `LLMForge`, `cloudflare-api-lab`, `devpulse`, `secret-sentinel`, `curio-byte`, `games`, `bloodbyte`, `portfolio-projects`, and `production-website`).
+- **Monorepo Architecture:** Consolidates core developer tooling suites, automation scripts, and legacy archives directly alongside the production web platform.
 - **Discord Community Integration:** Live server status panel and Curio.Byte bot invite widget.
 - **Interactive Contact Endpoint:** AJAX-powered contact form with CSRF token protection, honeypot anti-spam verification, and asynchronous JSON response.
 - **Dual-Storage Persistence:** Saves inquiries to MySQL database when available, with automatic file logging fallback to `data/inquiries.jsonl` if database is offline.
 - **Telemetry & Analytics:** Lightweight, privacy-respecting request logging for uptime and visitor metrics.
 - **GPG Identity Verification:** Embedded public GPG key fingerprint and download link.
+
+---
+
+## 📦 Consolidated Monorepo Modules
+
+This repository houses the following consolidated developer tools and archives:
+
+- [**LLMForge**](LLMForge/): Interactive terminal forge & multi-model CLI in Python for OpenRouter and Groq LLMs with markdown streaming, dual provider switching, and token metrics.
+- [**devpulse**](devpulse/): High-performance Python CLI utility for workspace git repository auditing, working tree health monitoring, and GPG security verification.
+- [**secret-sentinel**](secret-sentinel/): High-throughput secrets, API tokens, and credentials security scanner using Shannon entropy analysis, CLI TUI, and pre-commit hooks.
+- [**portfolio-projects**](portfolio-projects/): Modular developer utilities suite featuring C# File Organizer, Node.js Log Analyzer, PowerShell System Health Reporter, and POSIX Safe Backup script.
+- [**primary-website**](primary-website/): Canonical source and historical documentation archive for the original static website and Curio.Byte project roadmap.
 
 ---
 
