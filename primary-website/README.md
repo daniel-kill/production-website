@@ -15,7 +15,7 @@ Source repository for Daniel Kill's personal portfolio website hosted on Cloudfl
 ## 📁 Repository Structure
 
 ```text
-├── assets/           # Supporting static assets & resume
+├── assets/           # Supporting static assets
 ├── images/           # WebP portrait and visual assets
 ├── index.html        # Main landing page and portfolio showcase
 ├── styles.css        # Responsive stylesheet

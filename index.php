@@ -52,7 +52,6 @@ $csrfToken = getCsrfToken();
             <a class="btn" href="feed.php">📡 Live Feed <span aria-hidden="true">→</span></a>
             <a class="btn" href="games.php">🎮 Play Games Arcade <span aria-hidden="true">→</span></a>
             <a class="btn" href="https://github.com/daniel-kill?tab=repositories" target="_blank" rel="noopener noreferrer">GitHub Repositories <span aria-hidden="true">↗</span></a>
-            <a class="btn" href="assets/Resume_Daniel-Kill.pdf" target="_blank" rel="noopener noreferrer">Resume <span aria-hidden="true">↗</span></a>
           </div>
         </div>
         <div class="portrait-frame">
@@ -315,7 +314,6 @@ $csrfToken = getCsrfToken();
         <a href="https://github.com/daniel-kill?tab=repositories" target="_blank" rel="noopener noreferrer">Repositories ↗</a>
         <a href="https://linktr.ee/daniel_kill" target="_blank" rel="noopener noreferrer">Linktree ↗</a>
         <a href="https://discord.gg/muPYhD7MEM" target="_blank" rel="noopener noreferrer">Discord ↗</a>
-        <a href="assets/Resume_Daniel-Kill.pdf" target="_blank" rel="noopener noreferrer">Resume ↗</a>
       </div>
     </footer>
   </div>
