@@ -29,6 +29,11 @@ Thumbs.db
 *.suo
 *.user
 
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Local application configuration and runtime data
 config.local.php
 data/

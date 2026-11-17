@@ -2,6 +2,8 @@
 
 Source repository for the official production website of [Daniel Kill](https://github.com/daniel-kill), serving [**danielkill.online**](https://danielkill.online) and [**www.danielkill.online**](https://www.danielkill.online).
 
+**Documentation:** [AGENTS.md](AGENTS.md) | [HANDOFF.md](HANDOFF.md) | [ROADMAP.md](ROADMAP.md)
+
 ---
 
 ## 🛠️ Overview & Architecture
